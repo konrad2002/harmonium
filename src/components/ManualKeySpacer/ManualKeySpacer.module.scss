@@ -1,0 +1,21 @@
+.Spacer {
+  width: 10px;
+  border: solid 1px black;
+  background-color: #1a202c;
+  border-radius: 3px;
+  margin: 4px 5px;
+
+  &.Spacer1 {
+    height: 0;
+    margin: 0 5px;
+    border: none;
+  }
+
+  &.Spacer2 {
+    height: calc(134px / 3);
+  }
+
+  &.Spacer3 {
+    height: calc(134px / 3 * 2);
+  }
+}
