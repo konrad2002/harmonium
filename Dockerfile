@@ -2,7 +2,7 @@ FROM nginx
 COPY dist /usr/share/nginx/html
 COPY /nginx.conf  /etc/nginx/conf.d/default.conf
 
-COPY public/favicon /usr/share/nginx/html/
+#COPY public/favicon /usr/share/nginx/html/
 
 ARG VERSION="HEAD"
 ARG BRANCH="LOCAL"
