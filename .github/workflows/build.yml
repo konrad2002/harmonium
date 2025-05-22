@@ -67,7 +67,8 @@ jobs:
                   node-version: ${{ env.NODE_VERSION }}
                   cache: 'npm'
 
-            -   run: npm run build:${GITHUB_REF##*/}
+            - run: npm install
+            - run: npm run build:${GITHUB_REF##*/}
             - name: Cache build output
               uses: actions/cache/save@v4
               env:
