@@ -1,52 +1,48 @@
 import useOscillator from "../../hooks/useOscillator.ts";
-import {useState} from "react";
+import {useRef, useState} from "react";
 
 export default function SoundTester() {
   const [frequency, setFrequency] = useState(400);
-
-  const oscillator = useOscillator({
-    frequency: frequency, // Frequency in Hz
-    type: "sine", // Waveform type
-  });
-
-  let timeout: number | null = null;
+  const timeoutRef = useRef<number | undefined>(undefined); // Use useRef to persist timeout
+  const oscillatorRef = useRef(useOscillator({ frequency, type: "sine" })); // Persist oscillator
 
   function setValue() {
-    timeout = 10;
+    timeoutRef.current = 10; // Update the ref value
   }
 
   function getValue() {
-    console.log(timeout)
+    console.log(timeoutRef.current)
   }
 
 
   function playTone() {
-    oscillator.start();
+    oscillatorRef.current.start();
   }
 
   function startTone() {
     playTone();
 
-    timeout = setInterval(() => {
-      console.log(timeout)
-      setFrequency((f) => f + 10)
-
-      oscillator.set({frequency: frequency})
-    }, 100);
-    console.log("after start", timeout)
+    timeoutRef.current = setInterval(() => {
+      setFrequency((prevFrequency) => {
+        const newFrequency = prevFrequency + 1; // Calculate the new frequency
+        oscillatorRef.current.set({ frequency: newFrequency }); // Update the oscillator with the new frequency
+        return newFrequency; // Update the state
+      });
+    }, 50);
+    console.log("after start", timeoutRef.current)
   }
 
   function stopTone() {
-    console.log("stop", timeout)
-    if (timeout) {
-      clearInterval(timeout);
-      timeout = null;
+    console.log("stop", timeoutRef.current)
+    if (timeoutRef.current) {
+      clearInterval(timeoutRef.current as number);
+      timeoutRef.current = undefined;
     }
-    oscillator.stop();
+    oscillatorRef.current.stop();
   }
 
   function playToneFrequency(frequency: number) {
-    oscillator.set({frequency: frequency});
+    oscillatorRef.current.set({frequency: frequency});
     playTone();
   }
 
@@ -55,7 +51,9 @@ export default function SoundTester() {
       <button onMouseDown={playTone} onMouseUp={stopTone}>Play Tone</button>
       <button onClick={startTone}>Start</button>
       <button onClick={stopTone}>Stop</button>
-      <p>{frequency}</p>
+      <button onClick={setValue}>Set Value</button>
+      <button onClick={getValue}>Get Value</button>
+      <p>{frequency} Hz</p>
 
       <button onMouseDown={() => playToneFrequency(261.626)} onMouseUp={stopTone}>C4</button>
       <button onMouseDown={() => playToneFrequency(293.665)} onMouseUp={stopTone}>D4</button>
