@@ -1,0 +1,23 @@
+.ManualKeyRow {
+  display: inline-block;
+  vertical-align: top;
+  height: 100%;
+}
+
+.original {
+  height: calc(100vh - 90px);
+}
+
+.compact {
+  height: 150px;
+}
+
+.ManualRow1 {
+  //background-color: #00ffe0;
+  background-color: black;
+}
+
+.ManualRow2 {
+  //background-color: #eb3cff;
+  //background-color: white;
+}

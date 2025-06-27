@@ -12,10 +12,10 @@
   }
 
   &.Spacer2 {
-    height: calc(134px / 3);
+    height: calc((20% - 2px - 14px) / 3);
   }
 
   &.Spacer3 {
-    height: calc(134px / 3 * 2);
+    height: calc((20% - 2px - 14px) / 3 * 2);
   }
 }

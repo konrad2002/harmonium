@@ -24,7 +24,7 @@ export default function SoundTester() {
 
     timeoutRef.current = setInterval(() => {
       setFrequency((prevFrequency) => {
-        const newFrequency = prevFrequency + 1; // Calculate the new frequency
+        const newFrequency = prevFrequency + 50; // Calculate the new frequency
         oscillatorRef.current.set({ frequency: newFrequency }); // Update the oscillator with the new frequency
         return newFrequency; // Update the state
       });

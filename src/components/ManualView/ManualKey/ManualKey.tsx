@@ -2,9 +2,10 @@ import styles from './ManualKey.module.scss';
 
 type ManualKeyProps = {
   keyColor: "red" | "blue" | "white" | "yellow";
+  title: string;
 };
 
-export default function ManualKey({keyColor} : ManualKeyProps) {
+export default function ManualKey({keyColor, title} : ManualKeyProps) {
 
   const colors = {
     red: "#d3674a",
@@ -15,7 +16,8 @@ export default function ManualKey({keyColor} : ManualKeyProps) {
 
   return (
     <>
-      <div style={{backgroundColor: colors[keyColor]}} className={styles.ManualKey}>
+      <div style={{backgroundColor: colors[keyColor]}} className={styles.ManualKey} title={title}>
+        <span className={styles.ManualKeyText}>title</span>
       </div>
     </>
   )

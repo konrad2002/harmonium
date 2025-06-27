@@ -1,0 +1,28 @@
+.Key {
+  height: 80px;
+  width: 25px;
+  padding: 4px 5px;
+  background-color: white;
+  border: 1px solid black;
+  color: black;
+  border-radius: 2px;
+  display: inline-block;
+  writing-mode: vertical-rl;
+  font-size: 10px;
+  vertical-align: top;
+  text-align: end;
+}
+
+.KeyBlack {
+  height: 50px;
+  width: 8px;
+  padding: 4px 5px;
+  background-color: black;
+  color: white;
+  position: absolute;
+  transform: translateX(-12px);
+}
+
+.KeyMiddle {
+  width: 27px;
+}
