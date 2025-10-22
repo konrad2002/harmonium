@@ -4,7 +4,7 @@ export default function Keyboard() {
 
 
   function getName(i: number): string {
-    let names = ["C", "Cis/Des", "D", "Dis/Es", "E", "F", "Fis/Ges", "G", "Gis/As", "A", "Ais/b", "H"];
+    const names = ["C", "Cis/Des", "D", "Dis/Es", "E", "F", "Fis/Ges", "G", "Gis/As", "A", "Ais/b", "H"];
     return names[i % 12];
   }
 

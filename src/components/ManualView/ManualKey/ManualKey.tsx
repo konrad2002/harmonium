@@ -1,11 +1,15 @@
 import styles from './ManualKey.module.scss';
+import type {HarmoniumTone} from "../../../core/model/HarmoniumTone.ts";
+import type {MouseEventHandler} from "react";
 
 type ManualKeyProps = {
   keyColor: "red" | "blue" | "white" | "yellow";
-  title: string;
+  tone: HarmoniumTone;
+  onMouseDown?: MouseEventHandler<HTMLDivElement>;
+  onMouseUp?: MouseEventHandler<HTMLDivElement>;
 };
 
-export default function ManualKey({keyColor, title} : ManualKeyProps) {
+export default function ManualKey({keyColor, tone, onMouseDown, onMouseUp} : ManualKeyProps) {
 
   const colors = {
     red: "#d3674a",
@@ -16,8 +20,9 @@ export default function ManualKey({keyColor, title} : ManualKeyProps) {
 
   return (
     <>
-      <div style={{backgroundColor: colors[keyColor]}} className={styles.ManualKey} title={title}>
-        <span className={styles.ManualKeyText}>title</span>
+      <div style={{backgroundColor: colors[keyColor]}} className={styles.ManualKey} onMouseDown={onMouseDown}
+           onMouseUp={onMouseUp}>
+        <span className={styles.ManualKeyText}>{tone.name}</span>
       </div>
     </>
   )
