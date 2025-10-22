@@ -14,7 +14,7 @@ export default function Manual({layout}: ManualProps) {
     const baseFrequency = 440;
 
     const timeoutRef = useRef<number | undefined>(undefined); // Use useRef to persist timeout
-    const oscillatorRef = useRef(useOscillator({ baseFrequency, type: "sine" })); // Persist oscillator
+    const oscillatorRef = useRef(useOscillator({ frequency: baseFrequency, type: "sine" })); // Persist oscillator
 
     function getColor(i: number, j: number): "red" | "blue" | "white" | "yellow" {
         return ["white", "blue", "yellow", "red"][((i % 3 == 0 ? 3 : 0) + j + 2 * i + ((i - (i % 3)) / 3)) % 4] as "red" | "blue" | "white" | "yellow";
