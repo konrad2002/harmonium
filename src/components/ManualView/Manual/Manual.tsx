@@ -42,7 +42,7 @@ export default function Manual({layout}: ManualProps) {
     const [tones, setTones] = useState<HarmoniumTone[]>([{name: "-", cent: 0, millioctave: 0}]);
 
     useEffect(() => {
-        fetch("/public/tones_min.csv")
+        fetch("/tones_min.csv")
             .then(res => res.text())
             .then(text => {
                 const parsed = parseCSV(text);
