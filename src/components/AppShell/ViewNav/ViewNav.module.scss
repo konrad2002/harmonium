@@ -1,0 +1,22 @@
+.ViewNav {
+  display: flex;
+  gap: 8px;
+  padding: 10px 20px;
+  background-color: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.ViewNavButton {
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  color: var(--color-fg);
+  padding: 6px 14px;
+  cursor: pointer;
+}
+
+.ViewNavButtonActive {
+  background-color: var(--color-accent);
+  color: var(--color-accent-fg);
+  border-color: var(--color-accent);
+}

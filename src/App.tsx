@@ -1,20 +1,19 @@
-import style from './App.module.scss'
-import keysTopImage from './assets/pictures/keys_top.jpg'
-import Keyboard from "./components/KeyboardView/Keyboard/Keyboard.tsx";
-import Manual from "./components/ManualView/Manual/Manual.tsx";
+import {useState} from "react";
+import AppHeader from "./components/AppShell/AppHeader/AppHeader.tsx";
+import ViewNav, {type AppView} from "./components/AppShell/ViewNav/ViewNav.tsx";
+import PlaceholderView from "./components/AppShell/PlaceholderView/PlaceholderView.tsx";
+import PlayView from "./components/views/PlayView/PlayView.tsx";
 
 function App() {
+  const [activeView, setActiveView] = useState<AppView>("play");
+
   return (
     <>
-      <div className={style.ManualContainer}>
-        <Keyboard />
-        <Manual layout="original" />
-        <hr />
-        <Manual layout="compact" />
-      </div>
-      <hr />
-      <h2>Picture</h2>
-      <img src={keysTopImage} alt="image of keys"/>
+      <AppHeader/>
+      <ViewNav activeView={activeView} onSelectView={setActiveView}/>
+      {activeView === "play" && <PlayView/>}
+      {activeView === "compose" && <PlaceholderView title="Compose"/>}
+      {activeView === "import-export" && <PlaceholderView title="Import / Export"/>}
     </>
   )
 }

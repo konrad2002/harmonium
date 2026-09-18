@@ -1,0 +1,28 @@
+.AppHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.Title {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--color-fg);
+}
+
+.ThemeToggle {
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  color: var(--color-fg);
+  padding: 6px 12px;
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--color-accent);
+  }
+}
