@@ -1,0 +1,27 @@
+.SongSelector {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  background-color: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+
+  label {
+    color: var(--color-fg);
+    font-weight: 500;
+  }
+
+  select {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    color: var(--color-fg);
+    padding: 6px 10px;
+    cursor: pointer;
+
+    &:focus {
+      outline: none;
+      border-color: var(--color-accent);
+    }
+  }
+}

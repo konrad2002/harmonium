@@ -1,0 +1,49 @@
+.PlayerControls {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px 20px;
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.ButtonGroup {
+  display: flex;
+  gap: 8px;
+}
+
+.Button {
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  color: var(--color-fg);
+  padding: 6px 12px;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    border-color: var(--color-accent);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.TimeDisplay {
+  font-size: 0.9rem;
+  color: var(--color-fg);
+  font-family: monospace;
+}
+
+.ProgressBar {
+  input {
+    width: 100%;
+    cursor: pointer;
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+  }
+}

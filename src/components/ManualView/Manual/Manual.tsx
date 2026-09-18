@@ -7,13 +7,15 @@ import {parseCSV} from "../../../core/helper/CsvHelper.ts";
 import useHarmoniumSynth from "../../../hooks/useHarmoniumSynth.ts";
 
 type ManualProps = {
-    layout: "original" | "compact"
+    layout: "original" | "compact";
+    // Frequencies currently playing from song playback (to highlight keys)
+    playingFrequencies?: Set<number>;
 }
 
 // Sequential computer-keyboard shortcuts for the first keys of the manual (by tone index).
 const KEYBOARD_KEYS = "1234567890qwertyuiopasdfghjklzxcvbnm,./".split("");
 
-export default function Manual({layout}: ManualProps) {
+export default function Manual({layout, playingFrequencies}: ManualProps) {
     const baseFrequency = 261.63;
 
     const {playTone, stopTone, setVolume} = useHarmoniumSynth();
@@ -97,7 +99,7 @@ export default function Manual({layout}: ManualProps) {
                     key={j}
                     keyColor={getColor(i, j)}
                     tone={tone}
-                    pressed={pressedFrequencies.has(tone.frequency)}
+                    pressed={pressedFrequencies.has(tone.frequency) || playingFrequencies?.has(tone.frequency) || false}
                     onMouseDown={() => press(tone.frequency)}
                     onMouseUp={() => release(tone.frequency)}
                     onMouseLeave={() => pressedFrequencies.has(tone.frequency) && release(tone.frequency)}
