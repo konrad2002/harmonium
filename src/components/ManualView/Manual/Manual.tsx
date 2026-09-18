@@ -4,7 +4,6 @@ import ManualKeySpacer from "../ManualKeySpacer/ManualKeySpacer.tsx";
 import {useEffect, useRef, useState} from "react";
 import type {HarmoniumTone} from "../../../core/model/HarmoniumTone.ts";
 import {parseCSV} from "../../../core/helper/CsvHelper.ts";
-import useOscillator from "../../../hooks/useOscillator.ts";
 import useSynth from "../../../hooks/useSynth.ts";
 import {now} from "tone";
 
@@ -15,36 +14,13 @@ type ManualProps = {
 export default function Manual({layout}: ManualProps) {
     const baseFrequency = 261.63;
 
-    const timeoutRef = useRef<number | undefined>(undefined); // Use useRef to persist timeout
-    const oscillatorRef = useRef(useOscillator({ frequency: baseFrequency, type: "sine" })); // Persist oscillator
     const synthRef = useRef(useSynth());
 
     function getColor(i: number, j: number): "red" | "blue" | "white" | "yellow" {
         return ["white", "blue", "yellow", "red"][((i % 3 == 0 ? 3 : 0) + j + 2 * i + ((i - (i % 3)) / 3)) % 4] as "red" | "blue" | "white" | "yellow";
     }
 
-
-    function playTone() {
-        oscillatorRef.current.start();
-    }
-
-    function stopTone() {
-        console.log("stop", timeoutRef.current)
-        if (timeoutRef.current) {
-            clearInterval(timeoutRef.current as number);
-            timeoutRef.current = undefined;
-        }
-        oscillatorRef.current.stop();
-    }
-
-    function playToneFrequency(frequency: number) {
-        oscillatorRef.current.set({frequency: frequency});
-        playTone();
-    }
-
     function playToneFrequencySynth(frequency: number) {
-        //synthRef.current.triggerAttackRelease(frequency, '1n.');
-        //synthRef.current.triggerAttack(frequency);
         synthRef.current.triggerAttack(frequency, now(), 1.2);
     }
 
@@ -55,15 +31,14 @@ export default function Manual({layout}: ManualProps) {
     const [tones, setTones] = useState<HarmoniumTone[]>([{name: "-", cent: 0, frequency: 0, millioctave: 0}]);
 
     useEffect(() => {
+        // tones_min.csv is the reduced 64-tone set matching the 56-key manual layout below
         fetch("/tones_min.csv")
             .then(res => res.text())
             .then(text => {
-                const parsed = parseCSV(text);
-                parsed.map(p => {
-                    p.frequency = baseFrequency + (p.cent / 5);
-                    p.name += " (" + (p.frequency).toFixed(2) + " cents)";
-                    return p;
-                })
+                const parsed = parseCSV(text, baseFrequency);
+                parsed.forEach(p => {
+                    p.name += " (" + p.frequency.toFixed(2) + " Hz)";
+                });
                 setTones(parsed);
             });
     }, []);

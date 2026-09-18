@@ -1,6 +1,8 @@
+@use "styles/theme";
+
 body {
-  background-color: #000;
-  color: #ccc
+  background-color: var(--color-bg);
+  color: var(--color-fg);
 }
 
 img {

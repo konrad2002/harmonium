@@ -12,10 +12,10 @@ type ManualKeyProps = {
 export default function ManualKey({keyColor, tone, onMouseDown, onMouseUp} : ManualKeyProps) {
 
   const colors = {
-    red: "#d3674a",
-    blue: "#1d308f",
-    white: "#e4eef8",
-    yellow: "#e6de60"
+    red: "var(--manual-key-red)",
+    blue: "var(--manual-key-blue)",
+    white: "var(--manual-key-white)",
+    yellow: "var(--manual-key-yellow)"
   }
 
   return (

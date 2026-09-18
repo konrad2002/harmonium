@@ -2,9 +2,9 @@
   height: 80px;
   width: 25px;
   padding: 4px 5px;
-  background-color: white;
-  border: 1px solid black;
-  color: black;
+  background-color: var(--key-white-bg);
+  border: 1px solid var(--color-border);
+  color: var(--key-white-fg);
   border-radius: 2px;
   display: inline-block;
   writing-mode: vertical-rl;
@@ -17,8 +17,8 @@
   height: 50px;
   width: 8px;
   padding: 4px 5px;
-  background-color: black;
-  color: white;
+  background-color: var(--key-black-bg);
+  color: var(--key-black-fg);
   position: absolute;
   transform: translateX(-12px);
 }
