@@ -1,31 +1,40 @@
 import ManualKey from "../ManualKey/ManualKey.tsx";
 import style from "./Manual.module.scss";
 import ManualKeySpacer from "../ManualKeySpacer/ManualKeySpacer.tsx";
-import {useEffect, useRef, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import type {HarmoniumTone} from "../../../core/model/HarmoniumTone.ts";
 import {parseCSV} from "../../../core/helper/CsvHelper.ts";
-import useSynth from "../../../hooks/useSynth.ts";
-import {now} from "tone";
+import useHarmoniumSynth from "../../../hooks/useHarmoniumSynth.ts";
 
 type ManualProps = {
     layout: "original" | "compact"
 }
 
+// Sequential computer-keyboard shortcuts for the first keys of the manual (by tone index).
+const KEYBOARD_KEYS = "1234567890qwertyuiopasdfghjklzxcvbnm,./".split("");
+
 export default function Manual({layout}: ManualProps) {
     const baseFrequency = 261.63;
 
-    const synthRef = useRef(useSynth());
+    const {playTone, stopTone, setVolume} = useHarmoniumSynth();
+    const [pressedFrequencies, setPressedFrequencies] = useState<Set<number>>(new Set());
+
+    const press = useCallback((frequency: number) => {
+        playTone(frequency);
+        setPressedFrequencies(prev => new Set(prev).add(frequency));
+    }, [playTone]);
+
+    const release = useCallback((frequency: number) => {
+        stopTone(frequency);
+        setPressedFrequencies(prev => {
+            const next = new Set(prev);
+            next.delete(frequency);
+            return next;
+        });
+    }, [stopTone]);
 
     function getColor(i: number, j: number): "red" | "blue" | "white" | "yellow" {
         return ["white", "blue", "yellow", "red"][((i % 3 == 0 ? 3 : 0) + j + 2 * i + ((i - (i % 3)) / 3)) % 4] as "red" | "blue" | "white" | "yellow";
-    }
-
-    function playToneFrequencySynth(frequency: number) {
-        synthRef.current.triggerAttack(frequency, now(), 1.2);
-    }
-
-    function stopToneFrequencySynth(frequency: number) {
-        synthRef.current.triggerRelease(frequency);
     }
 
     const [tones, setTones] = useState<HarmoniumTone[]>([{name: "-", cent: 0, frequency: 0, millioctave: 0}]);
@@ -42,6 +51,29 @@ export default function Manual({layout}: ManualProps) {
                 setTones(parsed);
             });
     }, []);
+
+    // Play the first tones via the computer keyboard (only covers a subset of all manual keys).
+    useEffect(() => {
+        function handleKeyDown(e: KeyboardEvent) {
+            if (e.repeat) return;
+            const index = KEYBOARD_KEYS.indexOf(e.key);
+            if (index === -1 || index >= tones.length) return;
+            press(tones[index].frequency);
+        }
+
+        function handleKeyUp(e: KeyboardEvent) {
+            const index = KEYBOARD_KEYS.indexOf(e.key);
+            if (index === -1 || index >= tones.length) return;
+            release(tones[index].frequency);
+        }
+
+        window.addEventListener("keydown", handleKeyDown);
+        window.addEventListener("keyup", handleKeyUp);
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+            window.removeEventListener("keyup", handleKeyUp);
+        };
+    }, [tones, press, release]);
 
     const buttons = [];
 
@@ -65,8 +97,18 @@ export default function Manual({layout}: ManualProps) {
                     key={j}
                     keyColor={getColor(i, j)}
                     tone={tone}
-                    onMouseDown={() => playToneFrequencySynth(tone.frequency)}
-                    onMouseUp={() => stopToneFrequencySynth(tone.frequency)}
+                    pressed={pressedFrequencies.has(tone.frequency)}
+                    onMouseDown={() => press(tone.frequency)}
+                    onMouseUp={() => release(tone.frequency)}
+                    onMouseLeave={() => pressedFrequencies.has(tone.frequency) && release(tone.frequency)}
+                    onTouchStart={(e) => {
+                        e.preventDefault();
+                        press(tone.frequency);
+                    }}
+                    onTouchEnd={(e) => {
+                        e.preventDefault();
+                        release(tone.frequency);
+                    }}
                 />
             );
         }
@@ -84,6 +126,19 @@ export default function Manual({layout}: ManualProps) {
 
     return (
         <>
+            <div className={style.VolumeControl}>
+                <label>
+                    Volume
+                    <input
+                        type="range"
+                        min={-40}
+                        max={6}
+                        defaultValue={0}
+                        step={1}
+                        onChange={(e) => setVolume(Number(e.target.value))}
+                    />
+                </label>
+            </div>
             <div className={style[layout]}>
                 {buttons}
             </div>

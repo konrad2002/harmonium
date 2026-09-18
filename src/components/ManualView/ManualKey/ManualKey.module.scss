@@ -6,6 +6,12 @@
   margin: 4px 5px;
   display: block;
   cursor: pointer;
+  touch-action: none;
+}
+
+.ManualKeyPressed {
+  filter: brightness(0.7);
+  transform: scale(0.96);
 }
 
 .ManualKeyText {
