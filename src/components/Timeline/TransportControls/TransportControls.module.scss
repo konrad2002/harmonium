@@ -1,0 +1,142 @@
+.TransportControls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 16px;
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    flex-wrap: wrap;
+}
+
+.Section {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.Button {
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--color-border);
+    background-color: var(--color-bg);
+    color: var(--color-fg);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+
+    &:hover {
+        background-color: rgba(var(--color-accent-rgb), 0.2);
+        border-color: var(--color-accent);
+    }
+
+    &.Active {
+        background-color: var(--color-accent);
+        color: white;
+        border-color: var(--color-accent);
+    }
+}
+
+.TimelineSlider {
+    flex: 1;
+    min-width: 200px;
+    height: 6px;
+    border-radius: 3px;
+    background: linear-gradient(to right, var(--color-accent), var(--color-accent));
+    outline: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+
+    &::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: var(--color-accent);
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    &::-moz-range-thumb {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: var(--color-accent);
+        cursor: pointer;
+        border: none;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+}
+
+.TimeDisplay {
+    display: flex;
+    gap: 4px;
+    font-family: "Courier New", monospace;
+    font-size: 13px;
+    font-weight: bold;
+    color: var(--color-fg);
+    min-width: 90px;
+}
+
+.Label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-fg);
+}
+
+.NumberInput {
+    width: 60px;
+    padding: 6px 8px;
+    border: 1px solid var(--color-border);
+    background-color: var(--color-bg);
+    color: var(--color-fg);
+    border-radius: 4px;
+    font-size: 12px;
+    text-align: center;
+
+    &:focus {
+        outline: none;
+        border-color: var(--color-accent);
+        box-shadow: 0 0 4px rgba(var(--color-accent-rgb), 0.3);
+    }
+}
+
+.ZoomSlider {
+    width: 100px;
+    height: 6px;
+    border-radius: 3px;
+    outline: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+
+    &::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: var(--color-accent);
+        cursor: pointer;
+    }
+
+    &::-moz-range-thumb {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: var(--color-accent);
+        cursor: pointer;
+        border: none;
+    }
+}
+
+.ZoomValue {
+    min-width: 35px;
+    text-align: right;
+    font-size: 12px;
+    color: var(--color-fg);
+}

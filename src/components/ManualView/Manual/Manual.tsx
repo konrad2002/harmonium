@@ -10,12 +10,15 @@ type ManualProps = {
     layout: "original" | "compact";
     // Frequencies currently playing from song playback (to highlight keys)
     playingFrequencies?: Set<number>;
+    // Callbacks for recording key presses
+    onKeyDown?: (frequency: number) => void;
+    onKeyUp?: (frequency: number) => void;
 }
 
 // Sequential computer-keyboard shortcuts for the first keys of the manual (by tone index).
 const KEYBOARD_KEYS = "1234567890qwertyuiopasdfghjklzxcvbnm,./".split("");
 
-export default function Manual({layout, playingFrequencies}: ManualProps) {
+export default function Manual({layout, playingFrequencies, onKeyDown, onKeyUp}: ManualProps) {
     const baseFrequency = 261.63;
 
     const {playTone, stopTone, setVolume} = useHarmoniumSynth();
@@ -23,17 +26,19 @@ export default function Manual({layout, playingFrequencies}: ManualProps) {
 
     const press = useCallback((frequency: number) => {
         playTone(frequency);
+        onKeyDown?.(frequency);
         setPressedFrequencies(prev => new Set(prev).add(frequency));
-    }, [playTone]);
+    }, [playTone, onKeyDown]);
 
     const release = useCallback((frequency: number) => {
         stopTone(frequency);
+        onKeyUp?.(frequency);
         setPressedFrequencies(prev => {
             const next = new Set(prev);
             next.delete(frequency);
             return next;
         });
-    }, [stopTone]);
+    }, [stopTone, onKeyUp]);
 
     function getColor(i: number, j: number): "red" | "blue" | "white" | "yellow" {
         return ["white", "blue", "yellow", "red"][((i % 3 == 0 ? 3 : 0) + j + 2 * i + ((i - (i % 3)) / 3)) % 4] as "red" | "blue" | "white" | "yellow";

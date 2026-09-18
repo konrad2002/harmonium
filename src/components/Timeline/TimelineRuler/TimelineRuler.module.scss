@@ -1,0 +1,59 @@
+.TimelineRuler {
+    position: relative;
+    height: 50px;
+    border-bottom: 1px solid var(--color-border);
+    background-color: var(--color-surface);
+    overflow: hidden;
+    user-select: none;
+}
+
+.Markers {
+    position: relative;
+    height: 100%;
+}
+
+.Marker {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    cursor: pointer;
+    border-left: 1px solid var(--color-border);
+    padding-bottom: 4px;
+
+    &:hover {
+        background-color: rgba(var(--color-accent-rgb), 0.1);
+    }
+}
+
+.MajorMarker {
+    border-left-width: 2px;
+    border-left-color: var(--color-accent);
+    font-weight: bold;
+
+    &:hover {
+        background-color: rgba(var(--color-accent-rgb), 0.15);
+    }
+}
+
+.Label {
+    font-size: 11px;
+    color: var(--color-fg);
+    transform: translateX(-50%);
+    margin-left: 50%;
+    white-space: nowrap;
+    margin-bottom: 2px;
+}
+
+.Playhead {
+    position: absolute;
+    top: 0;
+    width: 2px;
+    height: 100%;
+    background-color: var(--color-accent);
+    box-shadow: 0 0 4px rgba(var(--color-accent-rgb), 0.5);
+    pointer-events: none;
+    z-index: 10;
+}

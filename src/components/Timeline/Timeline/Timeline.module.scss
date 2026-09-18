@@ -1,0 +1,112 @@
+.TimelineContainer {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background-color: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.RulerContainer {
+    display: flex;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.ToneNameColumn {
+    width: 120px;
+    flex-shrink: 0;
+    background-color: var(--color-surface);
+    border-right: 1px solid var(--color-border);
+}
+
+.RulerScroll {
+    flex: 1;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.LanesContainer {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+.ToneNamesColumn {
+    width: 120px;
+    flex-shrink: 0;
+    overflow-y: auto;
+    border-right: 1px solid var(--color-border);
+    background-color: var(--color-surface);
+}
+
+.ToneName {
+    padding: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--color-fg);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-bottom: 1px solid var(--color-border);
+    transition: background-color 0.1s;
+
+    &.Hovered {
+        background-color: rgba(var(--color-accent-rgb), 0.2);
+    }
+
+    span {
+        display: block;
+
+        &:first-child {
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+    }
+}
+
+.Frequency {
+    font-size: 10px !important;
+    opacity: 0.7;
+}
+
+.NotesScroll {
+    flex: 1;
+    overflow: auto;
+    position: relative;
+}
+
+.Lane {
+    position: relative;
+    border-bottom: 1px solid var(--color-border);
+    cursor: pointer;
+    transition: background-color 0.1s;
+
+    &:hover {
+        background-color: rgba(var(--color-accent-rgb), 0.1);
+    }
+
+    &.Hovered {
+        background-color: rgba(var(--color-accent-rgb), 0.15);
+    }
+}
+
+.LanePlayhead {
+    position: absolute;
+    top: 0;
+    width: 2px;
+    height: 100%;
+    background-color: var(--color-accent);
+    opacity: 0.6;
+    pointer-events: none;
+    z-index: 5;
+}
+
+.InfoBar {
+    padding: 8px 12px;
+    background-color: var(--color-surface);
+    border-top: 1px solid var(--color-border);
+    font-size: 12px;
+    color: var(--color-fg);
+    opacity: 0.7;
+}
