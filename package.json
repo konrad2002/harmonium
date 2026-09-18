@@ -12,6 +12,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tonejs/midi": "^2.0.28",
     "react": "19.2.2",
     "react-dom": "19.2.2",
     "sass": "^1.89.0",
