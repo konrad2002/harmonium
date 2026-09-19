@@ -1,58 +1,122 @@
 [
-    {
-        "id": 1,
-        "register": "I",
-        "label": "2 GES",
-        "colour": "red",
-        "tones": ["c°", "d°", "es+1", "f°", "g-1", "as°", "b°", "h+1"]
-    },
-    {
-        "id": 2,
-        "register": "II",
-        "label": "2 ES",
-        "colour": "white",
-        "tones": []
-    },
-    {
-        "id": 3,
-        "register": "III",
-        "label": "CES",
-        "colour": "blue",
-        "tones": []
-    },
-    {
-        "id": 4,
-        "register": "IV",
-        "label": "AS",
-        "colour": "yellow",
-        "tones": ["f°", "fis°", "g°", "gis°", "as°", "a°", "b°", "h°", "c°", "cis°", "d°", "es°", "e°"]
-    },
-    {
-        "id": 5,
-        "register": "V",
-        "label": "F",
-        "colour": "red",
-        "tones": []
-    },
-    {
-        "id": 6,
-        "register": "VI",
-        "label": "D",
-        "colour": "white",
-        "tones": []
-    },
-    {
-        "id": 7,
-        "register": "VII",
-        "label": "H",
-        "colour": "blue",
-        "tones": []
-    },
-    {
-        "id": 8,
-        "register": "VIII",
-        "label": "GIS",
-        "colour": "yellow",
-        "tones": []
-    }
+  {
+    "id": 1,
+    "register": "I",
+    "label": "2 GES",
+    "colour": "red",
+    "active": false,
+    "tones": []
+  },
+  {
+    "id": 2,
+    "register": "II",
+    "label": "2 ES",
+    "colour": "white",
+    "active": false,
+    "tones": []
+  },
+  {
+    "id": 3,
+    "register": "III",
+    "label": "CES",
+    "colour": "blue",
+    "active": true,
+    "tones": [
+      "f+1",
+      "ges+1",
+      "g+1",
+      "as+1",
+      "a+1",
+      "b+1",
+      "h+1",
+      "ces+1",
+      "c+1",
+      "des+1",
+      "d+1",
+      "es+1",
+      "e+1"
+    ]
+  },
+  {
+    "id": 4,
+    "register": "IV",
+    "label": "AS",
+    "colour": "yellow",
+    "active": true,
+    "tones": [
+      "f°",
+      "fis°",
+      "g°",
+      "gis°",
+      "as°",
+      "a°",
+      "b°",
+      "h°",
+      "c°",
+      "cis°",
+      "d°",
+      "es°",
+      "e°"
+    ]
+  },
+  {
+    "id": 5,
+    "register": "V",
+    "label": "F",
+    "colour": "red",
+    "active": true,
+    "tones": [
+      "eis-1",
+      "f-1",
+      "fis-1",
+      "g-1",
+      "gis-1",
+      "a-1",
+      "ais-1",
+      "h-1",
+      "c-1",
+      "cis-1",
+      "d-1",
+      "dis-1",
+      "e-1"
+    ]
+  },
+  {
+    "id": 6,
+    "register": "VI",
+    "label": "D",
+    "colour": "white",
+    "active": true,
+    "tones": [
+      "eis-2",
+      "fis-2",
+      "fisis-2",
+      "gis-2",
+      "a-2",
+      "ais-2",
+      "h-2",
+      "his-2",
+      "cis-2",
+      "cisis-2",
+      "d-2",
+      "dis-2",
+      "e-2"
+    ]
+  },
+  {
+    "id": 7,
+    "register": "VII",
+    "label": "H",
+    "colour": "blue",
+    "active": false,
+    "tones": []
+  },
+  {
+    "id": 8,
+    "register": "VIII",
+    "label": "GIS",
+    "colour": "yellow",
+    "active": false,
+    "tones": []
+  }
 ]

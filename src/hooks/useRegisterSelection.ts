@@ -11,8 +11,8 @@ export function useRegisterSelection(registers: Register[]) {
     // Map color -> active register ID
     const [activeRegisters, setActiveRegisters] = useState<Map<string, number>>(new Map());
 
-    // Once registers are loaded, default to the first (lowest id) register of each colour so
-    // keys produce sound out of the box, without overriding a selection the user already made.
+    // Once registers are loaded, default to each colour's register marked "active" in
+    // registers.json, without overriding a selection the user already made.
     useEffect(() => {
         if (registers.length === 0) return;
 
@@ -21,10 +21,7 @@ export function useRegisterSelection(registers: Register[]) {
 
             const defaults = new Map<string, number>();
             for (const register of registers) {
-                const current = defaults.get(register.colour);
-                if (current === undefined || register.id < current) {
-                    defaults.set(register.colour, register.id);
-                }
+                if (register.active) defaults.set(register.colour, register.id);
             }
             return defaults;
         });

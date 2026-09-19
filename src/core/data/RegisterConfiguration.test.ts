@@ -24,6 +24,7 @@ function makeRegister(overrides: Partial<Register> = {}): Register {
         register: "I",
         label: "Test",
         colour: "yellow",
+        active: false,
         tones: [],
         ...overrides,
     };

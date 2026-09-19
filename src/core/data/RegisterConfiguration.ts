@@ -10,6 +10,8 @@ export interface Register {
     register: string; // Roman numeral (I, II, III, etc.)
     label: string; // Register name (2 GES, 2 ES, etc.)
     colour: KeyColour;
+    // Whether this register is selected by default (page load / reset), per colour.
+    active: boolean;
     /**
      * Ordered tone names (matching the "name" column of the tones CSV) played by this colour's
      * keys, for one octave, when this register is active. The k-th key of this colour plays
@@ -27,7 +29,7 @@ export async function loadRegisters(): Promise<Register[]> {
         if (!response.ok) {
             throw new Error(`Failed to load registers: ${response.statusText}`);
         }
-        return response.json() as Promise<Register[]>;
+        return await response.json() as Promise<Register[]>;
     } catch (err) {
         console.error("Error loading registers:", err);
         return [];

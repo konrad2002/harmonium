@@ -15,6 +15,7 @@ import {
     resolveRegisterTone,
     type Register,
 } from "../../../core/data/RegisterConfiguration.ts";
+import Keyboard from "../../KeyboardView/Keyboard/Keyboard.tsx";
 
 type ManualProps = {
     layout: "original" | "compact";
@@ -34,6 +35,7 @@ const KEY_COLOUR_POSITIONS = computeKeyColourPositions(KEY_COLOURS);
 
 export default function Manual({layout, playingFrequencies, onKeyDown, onKeyUp}: ManualProps) {
     const baseFrequency = 261.63;
+    //const baseFrequency = 10;
 
     const {playTone, stopTone, setVolume} = useHarmoniumSynth();
     const [pressedFrequencies, setPressedFrequencies] = useState<Set<number>>(new Set());
@@ -154,11 +156,6 @@ export default function Manual({layout, playingFrequencies, onKeyDown, onKeyUp}:
 
     return (
         <>
-            <RegisterSelector
-                registers={registers}
-                activeRegisterIds={getActiveRegisterIds()}
-                onToggleRegister={toggleRegister}
-            />
             <div className={style.VolumeControl}>
                 <label>
                     Volume
@@ -172,6 +169,12 @@ export default function Manual({layout, playingFrequencies, onKeyDown, onKeyUp}:
                     />
                 </label>
             </div>
+            <RegisterSelector
+                registers={registers}
+                activeRegisterIds={getActiveRegisterIds()}
+                onToggleRegister={toggleRegister}
+            />
+            <Keyboard/>
             <div className={style[layout]}>
                 {buttons}
             </div>

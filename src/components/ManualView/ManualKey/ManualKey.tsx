@@ -36,7 +36,9 @@ export default function ManualKey({keyColor, tone, pressed, onMouseDown, onMouse
         onTouchStart={assigned ? onTouchStart : undefined}
         onTouchEnd={assigned ? onTouchEnd : undefined}
       >
-        <span className={styles.ManualKeyText}>{assigned ? tone.name : ""}</span>
+        <span className={styles.ManualKeyText}>
+          {assigned ? `${tone.name} (${tone.frequency.toFixed(2)} Hz)` : ""}
+        </span>
       </div>
     </>
   )

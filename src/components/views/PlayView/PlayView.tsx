@@ -1,7 +1,6 @@
 import {useState} from "react";
 import style from "./PlayView.module.scss";
 import keysTopImage from "../../../assets/pictures/keys_top.jpg";
-import Keyboard from "../../KeyboardView/Keyboard/Keyboard.tsx";
 import Manual from "../../ManualView/Manual/Manual.tsx";
 import SongSelector from "../../Player/SongSelector/SongSelector.tsx";
 import PlayerControls from "../../Player/PlayerControls/PlayerControls.tsx";
@@ -24,7 +23,6 @@ export default function PlayView() {
                 onPlayingFrequencies={setPlayingFrequencies}
             />
             <div className={style.ManualContainer}>
-                <Keyboard/>
                 <Manual layout="original" playingFrequencies={playingFrequencies}/>
                 <hr/>
                 <Manual layout="compact" playingFrequencies={playingFrequencies}/>
