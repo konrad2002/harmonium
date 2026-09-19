@@ -1,0 +1,123 @@
+.RegisterSelector {
+    padding: 12px;
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+}
+
+.Title {
+    margin: 0 0 12px 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-fg);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.RegisterGroups,
+.RegisterRow {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+}
+
+.RegisterItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.RegisterButton {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 3px solid;
+    background-color: #ffffff;
+    color: #000000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 700;
+    position: relative;
+
+    &:hover {
+        transform: scale(1.05);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    &:active {
+        transform: scale(0.98);
+    }
+
+    // Color-specific border only; fill stays white/black regardless of theme or state
+    &.Color_red {
+        border-color: var(--manual-key-red-fg);
+    }
+
+    &.Color_white {
+        border-color: #ffffff;
+    }
+
+    &.Color_blue {
+        border-color: var(--manual-key-blue-fg);
+    }
+
+    &.Color_yellow {
+        border-color: var(--manual-key-yellow-fg);
+    }
+
+    &.Active {
+        box-shadow: 0 0 10px 3px var(--register-active-shadow);
+    }
+}
+
+.RegisterNumber {
+    font-size: 13px;
+    line-height: 1;
+    font-weight: 600;
+    color: var(--color-fg);
+}
+
+.RegisterLabel {
+    font-size: 15px;
+    line-height: 1;
+    text-align: center;
+    font-weight: 700;
+}
+
+@media (max-width: 768px) {
+    .RegisterButton {
+        width: 50px;
+        height: 50px;
+
+        .RegisterLabel {
+            font-size: 14px;
+        }
+    }
+
+    .RegisterNumber {
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 480px) {
+    .RegisterButton {
+        width: 45px;
+        height: 45px;
+        border-width: 2px;
+
+        .RegisterLabel {
+            font-size: 12px;
+        }
+    }
+
+    .RegisterNumber {
+        font-size: 10px;
+    }
+}
+

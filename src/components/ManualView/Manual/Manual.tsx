@@ -1,10 +1,17 @@
 import ManualKey from "../ManualKey/ManualKey.tsx";
 import style from "./Manual.module.scss";
 import ManualKeySpacer from "../ManualKeySpacer/ManualKeySpacer.tsx";
+import RegisterSelector from "../RegisterSelector/RegisterSelector.tsx";
 import {useCallback, useEffect, useState} from "react";
 import type {HarmoniumTone} from "../../../core/model/HarmoniumTone.ts";
 import {parseCSV} from "../../../core/helper/CsvHelper.ts";
 import useHarmoniumSynth from "../../../hooks/useHarmoniumSynth.ts";
+import {useRegisterSelection} from "../../../hooks/useRegisterSelection.ts";
+import {
+    loadRegisters,
+    generateDummyRegisterToneMapping,
+    type Register,
+} from "../../../core/data/RegisterConfiguration.ts";
 
 type ManualProps = {
     layout: "original" | "compact";
@@ -23,6 +30,13 @@ export default function Manual({layout, playingFrequencies, onKeyDown, onKeyUp}:
 
     const {playTone, stopTone, setVolume} = useHarmoniumSynth();
     const [pressedFrequencies, setPressedFrequencies] = useState<Set<number>>(new Set());
+    const [tones, setTones] = useState<HarmoniumTone[]>([{name: "-", cent: 0, frequency: 0, millioctave: 0}]);
+    const [registers, setRegisters] = useState<Register[]>([]);
+    
+    const {
+        toggleRegister,
+        getActiveRegisterIds,
+    } = useRegisterSelection(registers);
 
     const press = useCallback((frequency: number) => {
         playTone(frequency);
@@ -44,10 +58,9 @@ export default function Manual({layout, playingFrequencies, onKeyDown, onKeyUp}:
         return ["white", "blue", "yellow", "red"][((i % 3 == 0 ? 3 : 0) + j + 2 * i + ((i - (i % 3)) / 3)) % 4] as "red" | "blue" | "white" | "yellow";
     }
 
-    const [tones, setTones] = useState<HarmoniumTone[]>([{name: "-", cent: 0, frequency: 0, millioctave: 0}]);
-
+    // Load tones and registers
     useEffect(() => {
-        // tones_min.csv is the reduced 64-tone set matching the 56-key manual layout below
+        // Load tones_min.csv - the reduced 64-tone set matching the 56-key manual layout
         fetch("/tones_min.csv")
             .then(res => res.text())
             .then(text => {
@@ -56,7 +69,13 @@ export default function Manual({layout, playingFrequencies, onKeyDown, onKeyUp}:
                     p.name += " (" + p.frequency.toFixed(2) + " Hz)";
                 });
                 setTones(parsed);
+                
+                // Generate register tone mapping based on loaded tones (for future use)
+                generateDummyRegisterToneMapping(parsed);
             });
+
+        // Load registers configuration
+        loadRegisters().then(setRegisters);
     }, []);
 
     // Play the first tones via the computer keyboard (only covers a subset of all manual keys).
@@ -133,6 +152,11 @@ export default function Manual({layout, playingFrequencies, onKeyDown, onKeyUp}:
 
     return (
         <>
+            <RegisterSelector
+                registers={registers}
+                activeRegisterIds={getActiveRegisterIds()}
+                onToggleRegister={toggleRegister}
+            />
             <div className={style.VolumeControl}>
                 <label>
                     Volume

@@ -18,6 +18,17 @@
   --manual-key-white: #e4eef8;
   --manual-key-yellow: #e6de60;
   --manual-key-fg: #000000;
+
+  --manual-key-red-bg: #d3674a;
+  --manual-key-red-fg: #d3674a;
+  --manual-key-white-bg: #e4eef8;
+  --manual-key-white-fg: #333333;
+  --manual-key-blue-bg: #1d308f;
+  --manual-key-blue-fg: #1d308f;
+  --manual-key-yellow-bg: #e6de60;
+  --manual-key-yellow-fg: #d4a500;
+
+  --register-active-shadow: rgba(255, 255, 255, 0.7);
 }
 
 [data-theme="light"] {
@@ -32,4 +43,6 @@
   --key-white-fg: #000000;
   --key-black-bg: #222222;
   --key-black-fg: #ffffff;
+
+  --register-active-shadow: rgba(0, 0, 0, 0.6);
 }

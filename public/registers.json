@@ -1,0 +1,50 @@
+[
+    {
+        "id": 1,
+        "register": "I",
+        "label": "2 GES",
+        "colour": "red"
+    },
+    {
+        "id": 2,
+        "register": "II",
+        "label": "2 ES",
+        "colour": "white"
+    },
+    {
+        "id": 3,
+        "register": "III",
+        "label": "CES",
+        "colour": "blue"
+    },
+    {
+        "id": 4,
+        "register": "IV",
+        "label": "AS",
+        "colour": "yellow"
+    },
+    {
+        "id": 5,
+        "register": "V",
+        "label": "F",
+        "colour": "red"
+    },
+    {
+        "id": 6,
+        "register": "VI",
+        "label": "D",
+        "colour": "white"
+    },
+    {
+        "id": 7,
+        "register": "VII",
+        "label": "H",
+        "colour": "blue"
+    },
+    {
+        "id": 8,
+        "register": "VIII",
+        "label": "GIS",
+        "colour": "yellow"
+    }
+]
