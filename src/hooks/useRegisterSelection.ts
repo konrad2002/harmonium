@@ -1,4 +1,4 @@
-import {useState, useCallback} from "react";
+import {useState, useCallback, useEffect} from "react";
 import type {Register} from "../core/data/RegisterConfiguration.ts";
 
 /**
@@ -10,6 +10,25 @@ import type {Register} from "../core/data/RegisterConfiguration.ts";
 export function useRegisterSelection(registers: Register[]) {
     // Map color -> active register ID
     const [activeRegisters, setActiveRegisters] = useState<Map<string, number>>(new Map());
+
+    // Once registers are loaded, default to the first (lowest id) register of each colour so
+    // keys produce sound out of the box, without overriding a selection the user already made.
+    useEffect(() => {
+        if (registers.length === 0) return;
+
+        setActiveRegisters(prev => {
+            if (prev.size > 0) return prev;
+
+            const defaults = new Map<string, number>();
+            for (const register of registers) {
+                const current = defaults.get(register.colour);
+                if (current === undefined || register.id < current) {
+                    defaults.set(register.colour, register.id);
+                }
+            }
+            return defaults;
+        });
+    }, [registers]);
 
     const toggleRegister = useCallback((registerId: number, colour: string) => {
         setActiveRegisters(prev => {

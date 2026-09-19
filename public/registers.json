@@ -3,48 +3,56 @@
         "id": 1,
         "register": "I",
         "label": "2 GES",
-        "colour": "red"
+        "colour": "red",
+        "tones": ["c°", "d°", "es+1", "f°", "g-1", "as°", "b°", "h+1"]
     },
     {
         "id": 2,
         "register": "II",
         "label": "2 ES",
-        "colour": "white"
+        "colour": "white",
+        "tones": []
     },
     {
         "id": 3,
         "register": "III",
         "label": "CES",
-        "colour": "blue"
+        "colour": "blue",
+        "tones": []
     },
     {
         "id": 4,
         "register": "IV",
         "label": "AS",
-        "colour": "yellow"
+        "colour": "yellow",
+        "tones": ["f°", "fis°", "g°", "gis°", "as°", "a°", "b°", "h°", "c°", "cis°", "d°", "es°", "e°"]
     },
     {
         "id": 5,
         "register": "V",
         "label": "F",
-        "colour": "red"
+        "colour": "red",
+        "tones": []
     },
     {
         "id": 6,
         "register": "VI",
         "label": "D",
-        "colour": "white"
+        "colour": "white",
+        "tones": []
     },
     {
         "id": 7,
         "register": "VII",
         "label": "H",
-        "colour": "blue"
+        "colour": "blue",
+        "tones": []
     },
     {
         "id": 8,
         "register": "VIII",
         "label": "GIS",
-        "colour": "yellow"
+        "colour": "yellow",
+        "tones": []
     }
 ]

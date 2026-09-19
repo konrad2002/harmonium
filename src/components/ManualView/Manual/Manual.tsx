@@ -2,14 +2,17 @@ import ManualKey from "../ManualKey/ManualKey.tsx";
 import style from "./Manual.module.scss";
 import ManualKeySpacer from "../ManualKeySpacer/ManualKeySpacer.tsx";
 import RegisterSelector from "../RegisterSelector/RegisterSelector.tsx";
-import {useCallback, useEffect, useState} from "react";
+import {useCallback, useEffect, useMemo, useState} from "react";
 import type {HarmoniumTone} from "../../../core/model/HarmoniumTone.ts";
 import {parseCSV} from "../../../core/helper/CsvHelper.ts";
 import useHarmoniumSynth from "../../../hooks/useHarmoniumSynth.ts";
 import {useRegisterSelection} from "../../../hooks/useRegisterSelection.ts";
 import {
     loadRegisters,
-    generateDummyRegisterToneMapping,
+    getManualKeyColours,
+    computeKeyColourPositions,
+    buildToneIndex,
+    resolveRegisterTone,
     type Register,
 } from "../../../core/data/RegisterConfiguration.ts";
 
@@ -25,6 +28,10 @@ type ManualProps = {
 // Sequential computer-keyboard shortcuts for the first keys of the manual (by tone index).
 const KEYBOARD_KEYS = "1234567890qwertyuiopasdfghjklzxcvbnm,./".split("");
 
+// Colour and within-colour position of each of the 56 manual keys; fixed by the physical layout.
+const KEY_COLOURS = getManualKeyColours();
+const KEY_COLOUR_POSITIONS = computeKeyColourPositions(KEY_COLOURS);
+
 export default function Manual({layout, playingFrequencies, onKeyDown, onKeyUp}: ManualProps) {
     const baseFrequency = 261.63;
 
@@ -32,11 +39,15 @@ export default function Manual({layout, playingFrequencies, onKeyDown, onKeyUp}:
     const [pressedFrequencies, setPressedFrequencies] = useState<Set<number>>(new Set());
     const [tones, setTones] = useState<HarmoniumTone[]>([{name: "-", cent: 0, frequency: 0, millioctave: 0}]);
     const [registers, setRegisters] = useState<Register[]>([]);
-    
+
     const {
+        activeRegisters,
         toggleRegister,
         getActiveRegisterIds,
     } = useRegisterSelection(registers);
+
+    // Lookup from raw tone name (as in the CSV) to its base tone; used to resolve register tones.
+    const toneIndex = useMemo(() => buildToneIndex(tones), [tones]);
 
     const press = useCallback((frequency: number) => {
         playTone(frequency);
@@ -54,25 +65,12 @@ export default function Manual({layout, playingFrequencies, onKeyDown, onKeyUp}:
         });
     }, [stopTone, onKeyUp]);
 
-    function getColor(i: number, j: number): "red" | "blue" | "white" | "yellow" {
-        return ["white", "blue", "yellow", "red"][((i % 3 == 0 ? 3 : 0) + j + 2 * i + ((i - (i % 3)) / 3)) % 4] as "red" | "blue" | "white" | "yellow";
-    }
-
     // Load tones and registers
     useEffect(() => {
         // Load tones_min.csv - the reduced 64-tone set matching the 56-key manual layout
         fetch("/tones_min.csv")
             .then(res => res.text())
-            .then(text => {
-                const parsed = parseCSV(text, baseFrequency);
-                parsed.forEach(p => {
-                    p.name += " (" + p.frequency.toFixed(2) + " Hz)";
-                });
-                setTones(parsed);
-                
-                // Generate register tone mapping based on loaded tones (for future use)
-                generateDummyRegisterToneMapping(parsed);
-            });
+            .then(text => setTones(parseCSV(text, baseFrequency)));
 
         // Load registers configuration
         loadRegisters().then(setRegisters);
@@ -113,27 +111,31 @@ export default function Manual({layout, playingFrequencies, onKeyDown, onKeyUp}:
             // color patter:
             // R W B G R G R W B W B G R G R W B G B G R W R W B G B G R W B W B G R G R W B
 
-            // get tone from csv
             n++;
+            const colour = KEY_COLOURS[n];
+            const activeRegisterId = activeRegisters.get(colour);
+            const activeRegister = registers.find(r => r.id === activeRegisterId);
 
-            const tone = tones[(n + tones.length - 7) % tones.length]
+            // Null when no register is active for this colour (or it has no tones configured yet):
+            // the key is then unassigned, showing no label and playing no sound.
+            const tone = resolveRegisterTone(activeRegister, KEY_COLOUR_POSITIONS[n], toneIndex, baseFrequency);
 
             row.push(
                 <ManualKey
                     key={j}
-                    keyColor={getColor(i, j)}
+                    keyColor={colour}
                     tone={tone}
-                    pressed={pressedFrequencies.has(tone.frequency) || playingFrequencies?.has(tone.frequency) || false}
-                    onMouseDown={() => press(tone.frequency)}
-                    onMouseUp={() => release(tone.frequency)}
-                    onMouseLeave={() => pressedFrequencies.has(tone.frequency) && release(tone.frequency)}
+                    pressed={(!!tone && (pressedFrequencies.has(tone.frequency) || playingFrequencies?.has(tone.frequency))) || false}
+                    onMouseDown={() => tone && press(tone.frequency)}
+                    onMouseUp={() => tone && release(tone.frequency)}
+                    onMouseLeave={() => tone && pressedFrequencies.has(tone.frequency) && release(tone.frequency)}
                     onTouchStart={(e) => {
                         e.preventDefault();
-                        press(tone.frequency);
+                        if (tone) press(tone.frequency);
                     }}
                     onTouchEnd={(e) => {
                         e.preventDefault();
-                        release(tone.frequency);
+                        if (tone) release(tone.frequency);
                     }}
                 />
             );
