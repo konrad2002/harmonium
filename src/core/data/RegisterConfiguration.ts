@@ -94,12 +94,10 @@ export function getKeyColorsForAllKeys(): string[] {
 
     // This mirrors the manual layout logic from Manual.tsx
     // For each of the 56 keys, determine the color based on the pattern
-    let n = -1;
     for (let i = 0; i < 56; i++) {
         const numKeysInRow = i % 3 === 0 ? 5 : 4;
 
         for (let j = 0; j < numKeysInRow; j++) {
-            n++;
             const color = getKeyColor(i, j);
             colors.push(color);
         }
