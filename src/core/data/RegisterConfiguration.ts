@@ -45,15 +45,19 @@ export function getKeyColour(i: number, j: number): KeyColour {
     return KEY_COLOURS[((i % 3 === 0 ? 3 : 0) + j + 2 * i + Math.floor(i / 3)) % 4];
 }
 
+// Number of key rows rendered by the manual; each row has 4 or 5 keys, so the flat key count
+// (returned by getManualKeyColours) is larger than this.
+export const MANUAL_ROW_COUNT = 56;
+
 /**
  * Flat list of colours for every key of the manual, in the same left-to-right, row-by-row order
- * used when rendering the keys.
+ * used when rendering the keys. `rowCount` is the number of rows, not the total key count.
  */
-export function getManualKeyColours(keyCount = 56): KeyColour[] {
+export function getManualKeyColours(rowCount = MANUAL_ROW_COUNT): KeyColour[] {
     const colours: KeyColour[] = [];
-    for (let i = 0; colours.length < keyCount; i++) {
+    for (let i = 0; i < rowCount; i++) {
         const rowSize = i % 3 === 0 ? 5 : 4;
-        for (let j = 0; j < rowSize && colours.length < keyCount; j++) {
+        for (let j = 0; j < rowSize; j++) {
             colours.push(getKeyColour(i, j));
         }
     }
@@ -85,18 +89,17 @@ export function buildToneIndex(tones: HarmoniumTone[]): Map<string, HarmoniumTon
 }
 
 /**
- * Shifts a tone up by whole octaves (1200 cents / 1000 millioctave each), recomputing frequency
- * with the same linear cent-to-frequency mapping used elsewhere in the app.
+ * Shifts a tone up by whole octaves: each octave adds 1200 cents / 1000 millioctave and doubles
+ * the frequency, so the result actually sounds an octave higher.
  */
-export function shiftToneByOctaves(tone: HarmoniumTone, octaves: number, baseFrequency: number): HarmoniumTone {
+export function shiftToneByOctaves(tone: HarmoniumTone, octaves: number): HarmoniumTone {
     if (octaves === 0) return tone;
 
-    const cent = tone.cent + 1200 * octaves;
     return {
         name: tone.name,
-        cent,
+        cent: tone.cent + 1200 * octaves,
         millioctave: tone.millioctave + 1000 * octaves,
-        frequency: baseFrequency + cent / 5,
+        frequency: tone.frequency * 2 ** octaves,
     };
 }
 
@@ -116,8 +119,7 @@ export function formatToneNameWithOctave(name: string, octaves: number): string 
 export function resolveRegisterTone(
     register: Register | undefined,
     positionInColour: number,
-    toneIndex: Map<string, HarmoniumTone>,
-    baseFrequency: number
+    toneIndex: Map<string, HarmoniumTone>
 ): HarmoniumTone | null {
     if (!register || register.tones.length === 0) return null;
 
@@ -128,7 +130,7 @@ export function resolveRegisterTone(
     const baseTone = toneIndex.get(toneName);
     if (!baseTone) return null;
 
-    const shifted = shiftToneByOctaves(baseTone, octaves, baseFrequency);
+    const shifted = shiftToneByOctaves(baseTone, octaves);
     return {...shifted, name: formatToneNameWithOctave(baseTone.name, octaves)};
 }
 

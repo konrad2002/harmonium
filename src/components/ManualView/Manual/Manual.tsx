@@ -118,7 +118,7 @@ export default function Manual({layout, playingFrequencies, onKeyDown, onKeyUp}:
 
             // Null when no register is active for this colour (or it has no tones configured yet):
             // the key is then unassigned, showing no label and playing no sound.
-            const tone = resolveRegisterTone(activeRegister, KEY_COLOUR_POSITIONS[n], toneIndex, baseFrequency);
+            const tone = resolveRegisterTone(activeRegister, KEY_COLOUR_POSITIONS[n], toneIndex);
 
             row.push(
                 <ManualKey
