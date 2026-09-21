@@ -117,6 +117,20 @@
     "label": "GIS",
     "colour": "yellow",
     "active": false,
-    "tones": []
+    "tones": [
+      "eis-4",
+      "eisis-4",
+      "fisis-4",
+      "fisisis-4",
+      "gis-4",
+      "gisis-4",
+      "ais-4",
+      "aisis-4",
+      "his-4",
+      "hisis-4",
+      "cisis-4",
+      "dis-4",
+      "disis-4"
+    ]
   }
 ]

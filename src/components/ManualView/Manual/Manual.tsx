@@ -70,7 +70,7 @@ export default function Manual({layout, playingFrequencies, onKeyDown, onKeyUp}:
     // Load tones and registers
     useEffect(() => {
         // Load tones_min.csv - the reduced 64-tone set matching the 56-key manual layout
-        fetch("/tones_min.csv")
+        fetch("/tones.csv")
             .then(res => res.text())
             .then(text => setTones(parseCSV(text, baseFrequency)));
 

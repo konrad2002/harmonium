@@ -17,7 +17,7 @@ function App() {
 
   // Load harmonium tones
   useEffect(() => {
-    fetch("/tones_min.csv")
+    fetch("/tones.csv")
       .then(res => res.text())
       .then(text => {
         const parsed = parseCSV(text, baseFrequency);
