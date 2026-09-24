@@ -18,6 +18,7 @@ export interface Register {
      * tones[k % tones.length], shifted up by Math.floor(k / tones.length) octaves.
      */
     tones: string[];
+    first_tone: number;
 }
 
 /**
@@ -121,18 +122,21 @@ export function formatToneNameWithOctave(name: string, octaves: number): string 
 export function resolveRegisterTone(
     register: Register | undefined,
     positionInColour: number,
-    toneIndex: Map<string, HarmoniumTone>
+    toneIndex: Map<string, HarmoniumTone>,
+    colour?: KeyColour
 ): HarmoniumTone | null {
     if (!register || register.tones.length === 0) return null;
 
     const toneCount = register.tones.length;
-    const octaves = Math.floor(positionInColour / toneCount);
-    const toneName = register.tones[positionInColour % toneCount];
+    const octaves = Math.floor((positionInColour + register.first_tone) / toneCount);
+    const toneName = register.tones[(positionInColour - register.first_tone - 3 + toneCount) % toneCount];
 
     const baseTone = toneIndex.get(toneName);
     if (!baseTone) return null;
 
     const shifted = shiftToneByOctaves(baseTone, octaves);
+    if (colour == "yellow")
+        console.log(`resolveRegisterTone: ${baseTone.name}\t->\t${shifted.name}\t(${baseTone.frequency.toFixed(2)} Hz\t->\t${shifted.frequency.toFixed(2)} Hz)\t${octaves}`);
     return {...shifted, name: formatToneNameWithOctave(baseTone.name, octaves)};
 }
 

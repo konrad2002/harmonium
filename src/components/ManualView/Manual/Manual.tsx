@@ -34,7 +34,7 @@ const KEY_COLOURS = getManualKeyColours();
 const KEY_COLOUR_POSITIONS = computeKeyColourPositions(KEY_COLOURS);
 
 export default function Manual({layout, playingFrequencies, onKeyDown, onKeyUp}: ManualProps) {
-    const baseFrequency = 261.63;
+    const baseFrequency = 42.8;
     //const baseFrequency = 10;
 
     const {playTone, stopTone, setVolume} = useHarmoniumSynth();
@@ -120,7 +120,7 @@ export default function Manual({layout, playingFrequencies, onKeyDown, onKeyUp}:
 
             // Null when no register is active for this colour (or it has no tones configured yet):
             // the key is then unassigned, showing no label and playing no sound.
-            const tone = resolveRegisterTone(activeRegister, KEY_COLOUR_POSITIONS[n], toneIndex);
+            const tone = resolveRegisterTone(activeRegister, KEY_COLOUR_POSITIONS[n], toneIndex, colour);
 
             row.push(
                 <ManualKey
@@ -153,6 +153,9 @@ export default function Manual({layout, playingFrequencies, onKeyDown, onKeyUp}:
             </div>
         );
     }
+
+    console.log("KEY_COLOURS", KEY_COLOURS);
+    console.log("KEY_COLOUR_POSITIONS", KEY_COLOUR_POSITIONS);
 
     return (
         <>

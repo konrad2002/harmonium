@@ -11,7 +11,7 @@ export function parseCSV(csvText: string, baseFrequency: number): HarmoniumTone[
                 name: name.trim(),
                 cent,
                 millioctave: parseFloat(millioctaveStr),
-                frequency: baseFrequency + cent / 5
+                frequency: baseFrequency * Math.pow(2, cent / 1200)
             };
         });
 }

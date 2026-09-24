@@ -5,7 +5,8 @@
     "label": "2 GES",
     "colour": "red",
     "active": false,
-    "tones": []
+    "tones": [],
+    "first_tone": 0
   },
   {
     "id": 2,
@@ -13,7 +14,8 @@
     "label": "2 ES",
     "colour": "white",
     "active": false,
-    "tones": []
+    "tones": [],
+    "first_tone": 0
   },
   {
     "id": 3,
@@ -22,20 +24,21 @@
     "colour": "blue",
     "active": true,
     "tones": [
+      "ces+1",
+      "c+1",
+      "des+1",
+      "d+1",
+      "es+1",
+      "e+1",
       "f+1",
       "ges+1",
       "g+1",
       "as+1",
       "a+1",
       "b+1",
-      "h+1",
-      "ces+1",
-      "c+1",
-      "des+1",
-      "d+1",
-      "es+1",
-      "e+1"
-    ]
+      "h+1"
+    ],
+    "first_tone": 6
   },
   {
     "id": 4,
@@ -44,6 +47,11 @@
     "colour": "yellow",
     "active": true,
     "tones": [
+      "c°",
+      "cis°",
+      "d°",
+      "es°",
+      "e°",
       "f°",
       "fis°",
       "g°",
@@ -51,13 +59,9 @@
       "as°",
       "a°",
       "b°",
-      "h°",
-      "c°",
-      "cis°",
-      "d°",
-      "es°",
-      "e°"
-    ]
+      "h°"
+    ],
+    "first_tone": 5
   },
   {
     "id": 5,
@@ -66,6 +70,11 @@
     "colour": "red",
     "active": true,
     "tones": [
+      "c-1",
+      "cis-1",
+      "d-1",
+      "dis-1",
+      "e-1",
       "eis-1",
       "f-1",
       "fis-1",
@@ -73,13 +82,9 @@
       "gis-1",
       "a-1",
       "ais-1",
-      "h-1",
-      "c-1",
-      "cis-1",
-      "d-1",
-      "dis-1",
-      "e-1"
-    ]
+      "h-1"
+    ],
+    "first_tone": 5
   },
   {
     "id": 6,
@@ -88,6 +93,11 @@
     "colour": "white",
     "active": true,
     "tones": [
+      "cis-2",
+      "cisis-2",
+      "d-2",
+      "dis-2",
+      "e-2",
       "eis-2",
       "fis-2",
       "fisis-2",
@@ -95,13 +105,9 @@
       "a-2",
       "ais-2",
       "h-2",
-      "his-2",
-      "cis-2",
-      "cisis-2",
-      "d-2",
-      "dis-2",
-      "e-2"
-    ]
+      "his-2"
+    ],
+    "first_tone": 5
   },
   {
     "id": 7,
@@ -109,7 +115,8 @@
     "label": "H",
     "colour": "blue",
     "active": false,
-    "tones": []
+    "tones": [],
+    "first_tone": 0
   },
   {
     "id": 8,
@@ -118,6 +125,9 @@
     "colour": "yellow",
     "active": false,
     "tones": [
+      "cisis-4",
+      "dis-4",
+      "disis-4",
       "eis-4",
       "eisis-4",
       "fisis-4",
@@ -127,10 +137,8 @@
       "ais-4",
       "aisis-4",
       "his-4",
-      "hisis-4",
-      "cisis-4",
-      "dis-4",
-      "disis-4"
-    ]
+      "hisis-4"
+    ],
+    "first_tone": 3
   }
 ]
