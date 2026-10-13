@@ -1,22 +1,20 @@
 .SongSelector {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 20px;
-  background-color: var(--color-bg);
-  border-bottom: 1px solid var(--color-border);
+  gap: 8px;
 
   label {
     color: var(--color-fg);
     font-weight: 500;
+    font-size: 0.9rem;
   }
 
   select {
-    background-color: var(--color-surface);
+    background-color: var(--color-bg);
     border: 1px solid var(--color-border);
     border-radius: 4px;
     color: var(--color-fg);
-    padding: 6px 10px;
+    padding: 3px 8px;
     cursor: pointer;
 
     &:focus {

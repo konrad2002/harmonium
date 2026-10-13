@@ -1,0 +1,11 @@
+.VolumeControl {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-fg);
+  font-size: 0.9rem;
+
+  input {
+    width: 100px;
+  }
+}

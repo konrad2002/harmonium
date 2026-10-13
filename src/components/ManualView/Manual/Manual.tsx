@@ -24,6 +24,8 @@ type ManualProps = {
     // Callbacks for recording key presses
     onKeyDown?: (frequency: number) => void;
     onKeyUp?: (frequency: number) => void;
+    // Show the manual's own volume slider (default true)
+    showVolume?: boolean;
 }
 
 // Sequential computer-keyboard shortcuts for the first keys of the manual (by tone index).
@@ -33,7 +35,7 @@ const KEYBOARD_KEYS = "1234567890qwertyuiopasdfghjklzxcvbnm,./".split("");
 const KEY_COLOURS = getManualKeyColours();
 const KEY_COLOUR_POSITIONS = computeKeyColourPositions(KEY_COLOURS);
 
-export default function Manual({layout, playingFrequencies, onKeyDown, onKeyUp}: ManualProps) {
+export default function Manual({layout, playingFrequencies, onKeyDown, onKeyUp, showVolume = true}: ManualProps) {
     const baseFrequency = 42.8;
     //const baseFrequency = 10;
 
@@ -159,19 +161,21 @@ export default function Manual({layout, playingFrequencies, onKeyDown, onKeyUp}:
 
     return (
         <>
-            <div className={style.VolumeControl}>
-                <label>
-                    Volume
-                    <input
-                        type="range"
-                        min={-40}
-                        max={6}
-                        defaultValue={0}
-                        step={1}
-                        onChange={(e) => setVolume(Number(e.target.value))}
-                    />
-                </label>
-            </div>
+            {showVolume && (
+                <div className={style.VolumeControl}>
+                    <label>
+                        Volume
+                        <input
+                            type="range"
+                            min={-40}
+                            max={6}
+                            defaultValue={0}
+                            step={1}
+                            onChange={(e) => setVolume(Number(e.target.value))}
+                        />
+                    </label>
+                </div>
+            )}
             <RegisterSelector
                 registers={registers}
                 activeRegisterIds={getActiveRegisterIds()}
