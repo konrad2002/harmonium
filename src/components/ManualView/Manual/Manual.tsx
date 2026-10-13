@@ -133,12 +133,16 @@ export default function Manual({layout, playingFrequencies, onKeyDown, onKeyUp, 
                     onMouseDown={() => tone && press(tone.frequency)}
                     onMouseUp={() => tone && release(tone.frequency)}
                     onMouseLeave={() => tone && pressedFrequencies.has(tone.frequency) && release(tone.frequency)}
-                    onTouchStart={(e) => {
-                        e.preventDefault();
+                    onTouchStart={() => {
                         if (tone) press(tone.frequency);
                     }}
                     onTouchEnd={(e) => {
+                        // Suppress emulated mouse events that would retrigger the note
                         e.preventDefault();
+                        if (tone) release(tone.frequency);
+                    }}
+                    // Fired when the browser takes over the touch to scroll the instrument
+                    onTouchCancel={() => {
                         if (tone) release(tone.frequency);
                     }}
                 />
@@ -181,9 +185,13 @@ export default function Manual({layout, playingFrequencies, onKeyDown, onKeyUp, 
                 activeRegisterIds={getActiveRegisterIds()}
                 onToggleRegister={toggleRegister}
             />
-            <Keyboard/>
-            <div className={style[layout]}>
-                {buttons}
+            <div className={style.Scroller}>
+                <div className={style[layout]}>
+                    <Keyboard/>
+                    <div className={style.Keys}>
+                        {buttons}
+                    </div>
+                </div>
             </div>
         </>
     )

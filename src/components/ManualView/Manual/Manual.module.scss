@@ -9,11 +9,32 @@
   padding: 4px 0;
 }
 
-.original {
+// Full-viewport-width scroll area: the keys overflow to the screen edges on small screens
+// and are centred when the whole instrument fits.
+.Scroller {
+  --manual-key-width: 10px;
+
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+
+  @media (pointer: coarse), (max-width: 768px) {
+    --manual-key-width: 25px;
+  }
+}
+
+.original, .compact {
+  width: max-content;
+  margin: 0 auto;
+  white-space: nowrap;
+}
+
+.original .Keys {
   height: calc(100vh - 90px);
 }
 
-.compact {
+.compact .Keys {
   height: 150px;
 }
 

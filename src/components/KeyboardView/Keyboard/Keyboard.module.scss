@@ -1,6 +1,18 @@
+// Sizes are derived from one manual column (key width + border + margins) so the piano stays
+// aligned with the harmonium keys below at any key width. At the default width (10px) a column
+// is 22px, a white key 37px (39px for the middle ones).
+.Keyboard {
+  --column: calc(var(--manual-key-width, 10px) + 12px);
+
+  position: relative;
+  white-space: nowrap;
+  user-select: none;
+}
+
 .Key {
-  height: 80px;
-  width: 25px;
+  box-sizing: border-box;
+  height: 90px;
+  width: calc(var(--column) * 37 / 22);
   padding: 4px 5px;
   background-color: var(--key-white-bg);
   border: 1px solid var(--color-border);
@@ -14,15 +26,14 @@
 }
 
 .KeyBlack {
-  height: 50px;
-  width: 8px;
-  padding: 4px 5px;
+  height: 60px;
+  width: calc(var(--column) * 20 / 22);
   background-color: var(--key-black-bg);
   color: var(--key-black-fg);
   position: absolute;
-  transform: translateX(-12px);
+  transform: translateX(calc(var(--column) * -12 / 22));
 }
 
 .KeyMiddle {
-  width: 27px;
+  width: calc(var(--column) * 39 / 22);
 }

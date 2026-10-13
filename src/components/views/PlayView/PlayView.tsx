@@ -25,9 +25,7 @@ export default function PlayView() {
                 />
                 <VolumeControl/>
             </div>
-            <div className={style.ManualContainer}>
-                <Manual layout="original" playingFrequencies={playingFrequencies} showVolume={false}/>
-            </div>
+            <Manual layout="original" playingFrequencies={playingFrequencies} showVolume={false}/>
         </>
     );
 }

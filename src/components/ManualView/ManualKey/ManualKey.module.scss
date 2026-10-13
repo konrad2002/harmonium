@@ -1,12 +1,13 @@
 .ManualKey {
-  width: 10px;
+  width: var(--manual-key-width, 10px);
   height: calc(20% - 2px - 8px);
   border: solid 1px var(--color-border);
   border-radius: 3px;
   margin: 4px 5px;
   display: block;
   cursor: pointer;
-  touch-action: none;
+  // Allow horizontal swipes on keys to scroll the instrument
+  touch-action: pan-x;
 }
 
 .ManualKeyPressed {

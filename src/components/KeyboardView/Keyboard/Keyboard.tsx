@@ -27,10 +27,8 @@ export default function Keyboard() {
   }
 
   return (
-    <>
-      <div>
-        {keys}
-      </div>
-    </>
+    <div className={style.Keyboard}>
+      {keys}
+    </div>
   )
 }
