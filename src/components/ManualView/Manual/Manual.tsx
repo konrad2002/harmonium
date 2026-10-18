@@ -2,25 +2,22 @@ import ManualKey from "../ManualKey/ManualKey.tsx";
 import style from "./Manual.module.scss";
 import ManualKeySpacer from "../ManualKeySpacer/ManualKeySpacer.tsx";
 import RegisterSelector from "../RegisterSelector/RegisterSelector.tsx";
-import {useCallback, useEffect, useMemo, useState} from "react";
-import type {HarmoniumTone} from "../../../core/model/HarmoniumTone.ts";
-import {parseCSV} from "../../../core/helper/CsvHelper.ts";
+import {useCallback, useEffect, useState, type ReactNode} from "react";
 import useHarmoniumSynth from "../../../hooks/useHarmoniumSynth.ts";
-import {useRegisterSelection} from "../../../hooks/useRegisterSelection.ts";
-import {
-    loadRegisters,
-    getManualKeyColours,
-    computeKeyColourPositions,
-    buildToneIndex,
-    resolveRegisterTone,
-    type Register,
-} from "../../../core/data/RegisterConfiguration.ts";
+import type {InstrumentTones} from "../../../hooks/useInstrumentTones.ts";
+import {KEY_COLOURS} from "../../../core/data/ManualLayout.ts";
 import Keyboard from "../../KeyboardView/Keyboard/Keyboard.tsx";
 
 type ManualProps = {
-    layout: "original" | "compact";
+    layout: "original" | "compact" | "compose";
+    // Tones and registers (see useInstrumentTones)
+    instrument: InstrumentTones;
     // Frequencies currently playing from song playback (to highlight keys)
     playingFrequencies?: Set<number>;
+    // Keys (by index) to show as pressed, e.g. while a timeline plays
+    activeKeys?: ReadonlySet<number>;
+    // Rendered inside the horizontally scrolling area, above the piano reference
+    topSlot?: ReactNode;
     // Callbacks for recording key presses
     onKeyDown?: (frequency: number) => void;
     onKeyUp?: (frequency: number) => void;
@@ -31,27 +28,11 @@ type ManualProps = {
 // Sequential computer-keyboard shortcuts for the first keys of the manual (by tone index).
 const KEYBOARD_KEYS = "1234567890qwertyuiopasdfghjklzxcvbnm,./".split("");
 
-// Colour and within-colour position of each of the 56 manual keys; fixed by the physical layout.
-const KEY_COLOURS = getManualKeyColours();
-const KEY_COLOUR_POSITIONS = computeKeyColourPositions(KEY_COLOURS);
-
-export default function Manual({layout, playingFrequencies, onKeyDown, onKeyUp, showVolume = true}: ManualProps) {
-    const baseFrequency = 42.8;
-    //const baseFrequency = 10;
+export default function Manual({layout, instrument, playingFrequencies, activeKeys, topSlot, onKeyDown, onKeyUp, showVolume = true}: ManualProps) {
+    const {tones, registers, activeRegisterIds, toggleRegister, keyTones} = instrument;
 
     const {playTone, stopTone, setVolume} = useHarmoniumSynth();
     const [pressedFrequencies, setPressedFrequencies] = useState<Set<number>>(new Set());
-    const [tones, setTones] = useState<HarmoniumTone[]>([{name: "-", cent: 0, frequency: 0, millioctave: 0}]);
-    const [registers, setRegisters] = useState<Register[]>([]);
-
-    const {
-        activeRegisters,
-        toggleRegister,
-        getActiveRegisterIds,
-    } = useRegisterSelection(registers);
-
-    // Lookup from raw tone name (as in the CSV) to its base tone; used to resolve register tones.
-    const toneIndex = useMemo(() => buildToneIndex(tones), [tones]);
 
     const press = useCallback((frequency: number) => {
         playTone(frequency);
@@ -68,17 +49,6 @@ export default function Manual({layout, playingFrequencies, onKeyDown, onKeyUp, 
             return next;
         });
     }, [stopTone, onKeyUp]);
-
-    // Load tones and registers
-    useEffect(() => {
-        // Load tones_min.csv - the reduced 64-tone set matching the 56-key manual layout
-        fetch("/tones.csv")
-            .then(res => res.text())
-            .then(text => setTones(parseCSV(text, baseFrequency)));
-
-        // Load registers configuration
-        loadRegisters().then(setRegisters);
-    }, []);
 
     // Play the first tones via the computer keyboard (only covers a subset of all manual keys).
     useEffect(() => {
@@ -117,19 +87,18 @@ export default function Manual({layout, playingFrequencies, onKeyDown, onKeyUp, 
 
             n++;
             const colour = KEY_COLOURS[n];
-            const activeRegisterId = activeRegisters.get(colour);
-            const activeRegister = registers.find(r => r.id === activeRegisterId);
+            const keyIndex = n;
 
             // Null when no register is active for this colour (or it has no tones configured yet):
             // the key is then unassigned, showing no label and playing no sound.
-            const tone = resolveRegisterTone(activeRegister, KEY_COLOUR_POSITIONS[n], toneIndex, colour);
+            const tone = keyTones[keyIndex];
 
             row.push(
                 <ManualKey
                     key={j}
                     keyColor={colour}
                     tone={tone}
-                    pressed={(!!tone && (pressedFrequencies.has(tone.frequency) || playingFrequencies?.has(tone.frequency))) || false}
+                    pressed={(!!tone && (pressedFrequencies.has(tone.frequency) || playingFrequencies?.has(tone.frequency))) || activeKeys?.has(keyIndex) || false}
                     onMouseDown={() => tone && press(tone.frequency)}
                     onMouseUp={() => tone && release(tone.frequency)}
                     onMouseLeave={() => tone && pressedFrequencies.has(tone.frequency) && release(tone.frequency)}
@@ -160,9 +129,6 @@ export default function Manual({layout, playingFrequencies, onKeyDown, onKeyUp, 
         );
     }
 
-    console.log("KEY_COLOURS", KEY_COLOURS);
-    console.log("KEY_COLOUR_POSITIONS", KEY_COLOUR_POSITIONS);
-
     return (
         <>
             {showVolume && (
@@ -182,11 +148,12 @@ export default function Manual({layout, playingFrequencies, onKeyDown, onKeyUp, 
             )}
             <RegisterSelector
                 registers={registers}
-                activeRegisterIds={getActiveRegisterIds()}
+                activeRegisterIds={activeRegisterIds}
                 onToggleRegister={toggleRegister}
             />
             <div className={style.Scroller}>
                 <div className={style[layout]}>
+                    {topSlot}
                     <Keyboard/>
                     <div className={style.Keys}>
                         {buttons}

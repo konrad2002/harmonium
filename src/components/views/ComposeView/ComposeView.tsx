@@ -1,201 +1,103 @@
-import {useState, useEffect} from "react";
+import {useEffect, useMemo, useRef} from "react";
 import style from "./ComposeView.module.scss";
-import Timeline from "../../Timeline/Timeline/Timeline.tsx";
-import TransportControls, {type PlaybackState} from "../../Timeline/TransportControls/TransportControls.tsx";
 import Manual from "../../ManualView/Manual/Manual.tsx";
-import useSongPlayer from "../../../hooks/useSongPlayer.ts";
+import ComposeTimeline from "../../Compose/ComposeTimeline/ComposeTimeline.tsx";
+import VolumeControl from "../../Player/VolumeControl/VolumeControl.tsx";
 import useHarmoniumSynth from "../../../hooks/useHarmoniumSynth.ts";
-import {useTimelineEditor} from "../../../hooks/useTimelineEditor.ts";
-import {EXAMPLE_SONGS} from "../../../core/data/ExampleSongs.ts";
-import {calculateSongDuration} from "../../../core/helper/TimelineHelper.ts";
-import type {Song} from "../../../core/model/Song.ts";
-import type {HarmoniumTone} from "../../../core/model/HarmoniumTone.ts";
+import {useInstrumentTones} from "../../../hooks/useInstrumentTones.ts";
+import useTimelinePlayer from "../../../hooks/useTimelinePlayer.ts";
+import {EXAMPLE_COMPOSITION} from "../../../core/data/ExampleComposition.ts";
+import {getCompositionDuration} from "../../../core/helper/ComposeTimelineHelper.ts";
 
-interface ComposeViewProps {
-    availableTones?: HarmoniumTone[];
+const PIXELS_PER_SECOND = 120;
+
+function formatTime(seconds: number): string {
+    const minutes = Math.floor(seconds / 60);
+    return `${minutes}:${(seconds - minutes * 60).toFixed(1).padStart(4, "0")}`;
 }
 
 /**
- * Compose view: Timeline-based song editor with live preview
+ * Compose view: a timeline whose columns line up with the manual below it. Boxes fall down
+ * onto a fixed line and sound the key underneath. (Static example; editing comes later.)
  */
-export default function ComposeView({availableTones = []}: ComposeViewProps) {
-    // Initialize with first example song or empty
-    const [song] = useState<Song>(EXAMPLE_SONGS[0] || {
-        title: "Untitled",
-        bpm: 120,
-        notes: [],
-    });
+export default function ComposeView() {
+    const instrument = useInstrumentTones();
+    const {playTone, stopTone} = useHarmoniumSynth();
 
-    const [timelineState, timelineActions] = useTimelineEditor(song);
-    const [playbackState, setPlaybackState] = useState<PlaybackState>("stopped");
-    const [playingFrequencies, setPlayingFrequencies] = useState<Set<number>>(new Set());
+    const notes = EXAMPLE_COMPOSITION;
+    const duration = useMemo(() => getCompositionDuration(notes), [notes]);
+    const scrollRef = useRef<HTMLDivElement>(null);
 
-    // Sync external song changes into timeline state
+    const player = useTimelinePlayer({notes, duration, pixelsPerSecond: PIXELS_PER_SECOND, scrollRef});
+
+    // Frequency sounding for each key under the playhead
+    const soundingRef = useRef(new Map<number, number>());
+
     useEffect(() => {
-        timelineActions.setSong(song);
-    }, [song, timelineActions]);
+        const sounding = soundingRef.current;
 
-    // Use song player for playback
-    const songPlayer = useSongPlayer(
-        playbackState === "playing" ? timelineState.song : null,
-        {
-            onPlayingFrequencies: setPlayingFrequencies,
+        for (const [key, frequency] of sounding) {
+            if (!player.activeKeys.has(key)) {
+                stopTone(frequency);
+                sounding.delete(key);
+            }
         }
-    );
 
-    // Synth for live recording
-    const synth = useHarmoniumSynth();
-
-    // Update recording state when playback state changes
-    useEffect(() => {
-        if (playbackState === "playing") {
-            timelineActions.setRecording(true);
-            songPlayer.play?.();
-        } else if (playbackState === "paused") {
-            songPlayer.pause?.();
-        } else if (playbackState === "stopped") {
-            timelineActions.setRecording(false);
-            songPlayer.stop?.();
-            timelineActions.setCurrentTime(0);
+        for (const key of player.activeKeys) {
+            const tone = instrument.keyTones[key];
+            if (sounding.has(key) || !tone) continue;
+            playTone(tone.frequency);
+            sounding.set(key, tone.frequency);
         }
-    }, [playbackState, songPlayer, timelineActions]);
+    }, [player.activeKeys, instrument.keyTones, playTone, stopTone]);
 
-    // Update current time display
+    // Release everything when leaving the view
     useEffect(() => {
-        const interval = setInterval(() => {
-            if (playbackState === "playing") {
-                timelineActions.setCurrentTime(songPlayer.currentTime ?? 0);
-            }
-        }, 50);
-        return () => clearInterval(interval);
-    }, [playbackState, songPlayer, timelineActions]);
-
-    // Keyboard shortcuts
-    useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.code === "Space") {
-                e.preventDefault();
-                setPlaybackState(prev =>
-                    prev === "playing" ? "paused" : "playing"
-                );
-            }
-            if (e.code === "KeyL" && !e.ctrlKey) {
-                e.preventDefault();
-                timelineActions.setLoop(
-                    !timelineState.loopEnabled
-                );
-            }
-            if (e.code === "Delete" || e.code === "Backspace") {
-                timelineActions.deleteSelectedNotes();
-            }
+        const sounding = soundingRef.current;
+        return () => {
+            for (const frequency of sounding.values()) stopTone(frequency);
+            sounding.clear();
         };
+    }, [stopTone]);
 
-        document.addEventListener("keydown", handleKeyDown);
-        return () => document.removeEventListener("keydown", handleKeyDown);
-    }, [timelineState.loopEnabled, timelineActions]);
-
-    const handleRecordKeyPress = (frequency: number) => {
-        if (timelineState.isRecording) {
-            timelineActions.recordKeyPress(frequency, 0.5);
-        }
-    };
-
-    const handleRecordKeyRelease = () => {
-        // Optional: add logic for note-off
-    };
+    const isPlaying = player.state === "playing";
 
     return (
-        <div className={style.ComposeView}>
-            {/* Header with song info */}
-            <div className={style.Header}>
-                <div className={style.SongInfo}>
-                    <input
-                        type="text"
-                        value={timelineState.song.title}
-                        onChange={e =>
-                            timelineActions.updateSongTitle(e.target.value)
-                        }
-                        className={style.SongTitle}
-                        placeholder="Song title"
-                    />
+        <>
+            <div className={style.Controls}>
+                <div className={style.ButtonGroup}>
+                    <button type="button" className={style.Button} onClick={player.stop} aria-label="Stop playback">
+                        ⏹ Stop
+                    </button>
+                    <button
+                        type="button"
+                        className={style.Button}
+                        onClick={isPlaying ? player.pause : player.play}
+                        aria-label={isPlaying ? "Pause playback" : "Play"}
+                    >
+                        {isPlaying ? "⏸ Pause" : "▶ Play"}
+                    </button>
                 </div>
-                <div className={style.Stats}>
-                    <span>{timelineState.song.notes.length} notes</span>
-                    <span>·</span>
-                    <span>{calculateSongDuration(timelineState.song).toFixed(1)}s</span>
-                </div>
+                <div className={style.Time}>{formatTime(player.currentTime)} / {formatTime(duration)}</div>
+                <VolumeControl/>
             </div>
-
-            {/* Transport controls */}
-            <div className={style.TransportSection}>
-                <TransportControls
-                    bpm={timelineState.song.bpm}
-                    currentTime={timelineState.currentTime}
-                    duration={calculateSongDuration(timelineState.song)}
-                    playbackState={playbackState}
-                    loopEnabled={timelineState.loopEnabled}
-                    zoom={timelineState.zoom}
-                    onPlay={() => setPlaybackState("playing")}
-                    onPause={() => setPlaybackState("paused")}
-                    onStop={() => setPlaybackState("stopped")}
-                    onSeek={time => {
-                        timelineActions.setCurrentTime(time);
-                        songPlayer.seek?.(time);
-                    }}
-                    onBPMChange={bpm =>
-                        timelineActions.updateSongBPM(bpm)
-                    }
-                    onZoomChange={zoom =>
-                        timelineActions.setZoom(zoom)
-                    }
-                    onToggleLoop={enabled =>
-                        timelineActions.setLoop(enabled)
-                    }
-                />
-            </div>
-
-            {/* Main editing area */}
-            <div className={style.EditingArea}>
-                {/* Timeline */}
-                <div className={style.TimelineSection}>
-                    <Timeline
-                        song={timelineState.song}
-                        allTones={availableTones.map(t => ({
-                            frequency: t.frequency,
-                            name: t.name,
-                        }))}
-                        selectedNoteIds={timelineState.selectedNoteIds}
-                        playingFrequencies={playingFrequencies}
-                        currentTime={timelineState.currentTime}
-                        zoom={timelineState.zoom}
-                        onSelectNote={timelineActions.selectNote}
-                        onUpdateNote={timelineActions.updateNote}
-                        onDeleteNote={timelineActions.deleteNote}
-                        onAddNote={timelineActions.addNote}
-                        onSeek={time => {
-                            timelineActions.setCurrentTime(time);
-                            songPlayer.seek?.(time);
-                        }}
+            <Manual
+                layout="compose"
+                instrument={instrument}
+                activeKeys={player.activeKeys}
+                showVolume={false}
+                topSlot={
+                    <ComposeTimeline
+                        notes={notes}
+                        keyTones={instrument.keyTones}
+                        activeKeys={player.activeKeys}
+                        duration={duration}
+                        pixelsPerSecond={PIXELS_PER_SECOND}
+                        scrollRef={scrollRef}
+                        onScroll={player.handleScroll}
                     />
-                </div>
-
-                {/* Live keyboard for recording */}
-                <div className={style.KeyboardSection}>
-                    <h3>Keyboard (click to record)</h3>
-                    <Manual
-                        layout="compact"
-                        playingFrequencies={playingFrequencies}
-                        onKeyDown={(frequency: number) => {
-                            handleRecordKeyPress(frequency);
-                            synth.playTone(frequency);
-                        }}
-                        onKeyUp={(frequency: number) => {
-                            handleRecordKeyRelease();
-                            synth.stopTone(frequency);
-                        }}
-                    />
-                </div>
-            </div>
-        </div>
+                }
+            />
+        </>
     );
 }

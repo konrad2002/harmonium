@@ -1,102 +1,36 @@
-.ComposeView {
+.Controls {
     display: flex;
-    flex-direction: column;
-    height: calc(100vh - 100px);
-    overflow: hidden;
-    gap: 12px;
-    padding: 12px;
-    background-color: var(--color-bg);
-}
-
-.Header {
-    display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    justify-content: space-between;
-    padding: 12px;
+    gap: 8px 24px;
+    padding: 6px 12px;
+    margin-bottom: 8px;
     background-color: var(--color-surface);
     border: 1px solid var(--color-border);
     border-radius: 4px;
 }
 
-.SongInfo {
-    flex: 1;
+.ButtonGroup {
+    display: flex;
+    gap: 6px;
 }
 
-.SongTitle {
-    font-size: 18px;
-    font-weight: 600;
-    padding: 4px 8px;
-    border: 1px solid transparent;
-    background-color: transparent;
-    color: var(--color-fg);
+.Button {
+    background: none;
+    border: 1px solid var(--color-border);
     border-radius: 4px;
-    transition: all 0.2s;
+    color: var(--color-fg);
+    padding: 3px 10px;
+    cursor: pointer;
 
     &:hover {
-        border-color: var(--color-border);
-        background-color: var(--color-bg);
-    }
-
-    &:focus {
-        outline: none;
         border-color: var(--color-accent);
-        background-color: var(--color-bg);
-        box-shadow: 0 0 4px rgba(var(--color-accent-rgb), 0.3);
     }
 }
 
-.Stats {
-    display: flex;
-    gap: 8px;
-    font-size: 13px;
+.Time {
+    font-family: monospace;
+    font-size: 0.85rem;
     color: var(--color-fg);
-    opacity: 0.7;
-}
-
-.TransportSection {
-    flex-shrink: 0;
-}
-
-.EditingArea {
-    display: flex;
-    gap: 12px;
-    flex: 1;
-    overflow: hidden;
-}
-
-.TimelineSection {
-    flex: 1;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-}
-
-.KeyboardSection {
-    flex: 0 0 300px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    padding: 12px;
-    background-color: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: 4px;
-    overflow-y: auto;
-
-    h3 {
-        margin: 0 0 8px 0;
-        font-size: 14px;
-        font-weight: 600;
-        color: var(--color-fg);
-    }
-}
-
-@media (max-width: 1024px) {
-    .EditingArea {
-        flex-direction: column;
-    }
-
-    .KeyboardSection {
-        flex: 0 0 200px;
-        max-height: 300px;
-    }
+    white-space: nowrap;
 }

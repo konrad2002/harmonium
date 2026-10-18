@@ -1,0 +1,83 @@
+.Timeline {
+  // One manual column: key width plus border and margins (see ManualKey)
+  --column: calc(var(--manual-key-width, 10px) + 12px);
+
+  position: relative;
+  width: calc(56 * var(--column));
+  height: max(260px, 45vh);
+  background-color: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.Scroll {
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  // Scrolled by playback or the mouse wheel / touch; a scrollbar would scroll out of view sideways
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+// Taller than the viewport by the song length, so every moment can be scrolled to the playhead
+.Content {
+  position: relative;
+  width: 100%;
+  height: calc(var(--duration-px) + 100%);
+}
+
+.Columns {
+  position: absolute;
+  inset: 0;
+  display: flex;
+}
+
+.Column {
+  flex: 0 0 var(--column);
+  box-sizing: border-box;
+  border-right: 1px solid var(--color-border);
+  opacity: 0.9;
+}
+
+.ColumnBlack {
+  background-color: var(--color-surface);
+}
+
+.Note {
+  position: absolute;
+  box-sizing: border-box;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: 3px;
+  writing-mode: vertical-rl;
+  font-size: 11px;
+  font-weight: bold;
+  line-height: 8px;
+  padding-top: 2px;
+  color: var(--manual-key-fg);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  user-select: none;
+}
+
+.NoteActive {
+  filter: brightness(1.25);
+  box-shadow: 0 0 8px 2px var(--register-active-shadow);
+}
+
+.NoteUnassigned {
+  filter: brightness(0.5) grayscale(0.6);
+}
+
+// Fixed line at the bottom edge; the key below sounds while a box overlaps it
+.Playhead {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background-color: var(--color-accent);
+  pointer-events: none;
+}

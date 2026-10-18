@@ -49,7 +49,7 @@ function App() {
       <AppHeader/>
       <ViewNav activeView={activeView} onSelectView={setActiveView}/>
       {activeView === "play" && <PlayView/>}
-      {activeView === "compose" && <ComposeView availableTones={tones}/>}
+      {activeView === "compose" && <ComposeView/>}
       {activeView === "import-export" && (
         <ImportExportView
           availableTones={tones}

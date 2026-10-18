@@ -24,7 +24,7 @@
   }
 }
 
-.original, .compact {
+.original, .compact, .compose {
   width: max-content;
   margin: 0 auto;
   white-space: nowrap;
@@ -36,6 +36,10 @@
 
 .compact .Keys {
   height: 150px;
+}
+
+.compose .Keys {
+  height: 330px;
 }
 
 .ManualRow1 {
