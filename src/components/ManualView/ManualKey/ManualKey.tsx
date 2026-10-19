@@ -9,6 +9,8 @@ type ManualKeyProps = {
   pressed?: boolean;
   // Marked as the key chosen for editing
   selected?: boolean;
+  // Append the frequency to the tone name in the label (default true)
+  showFrequency?: boolean;
   onMouseDown?: MouseEventHandler<HTMLDivElement>;
   onMouseUp?: MouseEventHandler<HTMLDivElement>;
   onMouseLeave?: MouseEventHandler<HTMLDivElement>;
@@ -17,7 +19,7 @@ type ManualKeyProps = {
   onTouchCancel?: TouchEventHandler<HTMLDivElement>;
 };
 
-export default function ManualKey({keyColor, tone, pressed, selected, onMouseDown, onMouseUp, onMouseLeave, onTouchStart, onTouchEnd, onTouchCancel} : ManualKeyProps) {
+export default function ManualKey({keyColor, tone, pressed, selected, showFrequency = true, onMouseDown, onMouseUp, onMouseLeave, onTouchStart, onTouchEnd, onTouchCancel} : ManualKeyProps) {
 
   const colors = {
     red: "var(--manual-key-red)",
@@ -41,7 +43,7 @@ export default function ManualKey({keyColor, tone, pressed, selected, onMouseDow
         onTouchCancel={assigned ? onTouchCancel : undefined}
       >
         <span className={styles.ManualKeyText}>
-          {assigned ? `${tone.name} (${tone.frequency.toFixed(2)} Hz)` : ""}
+          {assigned ? (showFrequency ? `${tone.name} (${tone.frequency.toFixed(2)} Hz)` : tone.name) : ""}
         </span>
       </div>
     </>

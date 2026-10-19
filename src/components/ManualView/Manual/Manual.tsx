@@ -30,12 +30,14 @@ type ManualProps = {
     showVolume?: boolean;
     // Show the register selector above the keys (default true)
     showRegisters?: boolean;
+    // Show the frequency next to the tone name on the keys (default true)
+    showFrequencies?: boolean;
 }
 
 // Sequential computer-keyboard shortcuts for the first keys of the manual (by tone index).
 const KEYBOARD_KEYS = "1234567890qwertyuiopasdfghjklzxcvbnm,./".split("");
 
-export default function Manual({layout, instrument, playingFrequencies, activeKeys, selectionMode = false, selectedKey = null, onSelectKey, topSlot, onKeyDown, onKeyUp, showVolume = true, showRegisters = true}: ManualProps) {
+export default function Manual({layout, instrument, playingFrequencies, activeKeys, selectionMode = false, selectedKey = null, onSelectKey, topSlot, onKeyDown, onKeyUp, showVolume = true, showRegisters = true, showFrequencies = true}: ManualProps) {
     const {tones, registers, activeRegisterIds, toggleRegister, keyTones} = instrument;
     const {t} = useI18n();
 
@@ -107,6 +109,7 @@ export default function Manual({layout, instrument, playingFrequencies, activeKe
                     keyColor={colour}
                     tone={tone}
                     selected={selectionMode && selectedKey === keyIndex}
+                    showFrequency={showFrequencies}
                     pressed={(!!tone && (pressedFrequencies.has(tone.frequency) || playingFrequencies?.has(tone.frequency))) || activeKeys?.has(keyIndex) || false}
                     onMouseDown={() => {
                         if (!tone) return;

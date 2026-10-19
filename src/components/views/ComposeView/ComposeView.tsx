@@ -154,6 +154,7 @@ export default function ComposeView() {
                 onSelectKey={setSelectedKey}
                 showVolume={false}
                 showRegisters={false}
+                showFrequencies={false}
                 topSlot={
                     <ComposeTimeline
                         notes={notes}
