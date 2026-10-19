@@ -3,6 +3,7 @@ import style from "./MidiImporter.module.scss";
 import {loadSongFromMidi} from "../../../core/helper/MidiHelper.ts";
 import type {Song} from "../../../core/model/Song.ts";
 import type {HarmoniumTone} from "../../../core/model/HarmoniumTone.ts";
+import {useI18n} from "../../../i18n.tsx";
 
 interface MidiImporterProps {
     availableTones: HarmoniumTone[];
@@ -10,6 +11,7 @@ interface MidiImporterProps {
 }
 
 export default function MidiImporter({availableTones, onSongImported}: MidiImporterProps) {
+    const {t} = useI18n();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -30,13 +32,13 @@ export default function MidiImporter({availableTones, onSongImported}: MidiImpor
             }));
 
             const song = await loadSongFromMidi(file, toneMap);
-            setSuccessMessage(`Imported "${song.title}" with ${song.notes.length} notes`);
+            setSuccessMessage(t("midiImport.success", {title: song.title, count: song.notes.length}));
             onSongImported?.(song);
 
             // Clear the file input
             e.target.value = "";
         } catch (err) {
-            const message = err instanceof Error ? err.message : "Unknown error";
+            const message = err instanceof Error ? err.message : t("midiImport.unknownError");
             setError(message);
         } finally {
             setIsLoading(false);
@@ -46,11 +48,8 @@ export default function MidiImporter({availableTones, onSongImported}: MidiImpor
     return (
         <div className={style.MidiImporter}>
             <div className={style.Section}>
-                <h3>Import MIDI File</h3>
-                <p>
-                    Select a MIDI file to import. Notes will be automatically mapped to the
-                    closest harmonium tones.
-                </p>
+                <h3>{t("midiImport.title")}</h3>
+                <p>{t("midiImport.description")}</p>
 
                 <label className={style.FileInput}>
                     <input
@@ -60,7 +59,7 @@ export default function MidiImporter({availableTones, onSongImported}: MidiImpor
                         disabled={isLoading}
                     />
                     <span className={style.Label}>
-                        {isLoading ? "Loading..." : "Choose MIDI File"}
+                        {isLoading ? t("midiImport.loading") : t("midiImport.chooseFile")}
                     </span>
                 </label>
 
@@ -69,12 +68,12 @@ export default function MidiImporter({availableTones, onSongImported}: MidiImpor
             </div>
 
             <div className={style.Info}>
-                <h4>How it works</h4>
+                <h4>{t("midiImport.howItWorks")}</h4>
                 <ul>
-                    <li>MIDI notes are automatically mapped to the closest harmonium tone frequencies</li>
-                    <li>The harmonium uses a non-12-TET tuning system for richer sounds</li>
-                    <li>Each MIDI note is matched to the nearest available tone</li>
-                    <li>BPM and timing information is preserved from the MIDI file</li>
+                    <li>{t("midiImport.mapping")}</li>
+                    <li>{t("midiImport.tuning")}</li>
+                    <li>{t("midiImport.matching")}</li>
+                    <li>{t("midiImport.timing")}</li>
                 </ul>
             </div>
         </div>

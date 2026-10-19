@@ -10,6 +10,7 @@ import useTimelinePlayer from "../../../hooks/useTimelinePlayer.ts";
 import {EXAMPLE_COMPOSITION} from "../../../core/data/ExampleComposition.ts";
 import {DEFAULT_NOTE_DURATION, getCompositionDuration} from "../../../core/helper/ComposeTimelineHelper.ts";
 import type {ComposeNote} from "../../../core/model/ComposeNote.ts";
+import {useI18n} from "../../../i18n.tsx";
 
 const PIXELS_PER_SECOND = 120;
 
@@ -24,6 +25,7 @@ function formatTime(seconds: number): string {
  * resized and deleted.
  */
 export default function ComposeView() {
+    const {t} = useI18n();
     const instrument = useInstrumentTones();
     const {playTone, stopTone} = useHarmoniumSynth();
 
@@ -113,31 +115,28 @@ export default function ComposeView() {
                         onClick={toggleEditMode}
                         aria-pressed={editMode}
                     >
-                        {editMode ? "✓ Done editing" : "✎ Edit"}
+                        {editMode ? t("compose.editDone") : t("compose.edit")}
                     </button>
                 </div>
                 <div className={style.ButtonGroup}>
-                    <button type="button" className={style.Button} onClick={player.stop} disabled={editMode} aria-label="Stop playback">
-                        ⏹ Stop
+                    <button type="button" className={style.Button} onClick={player.stop} disabled={editMode} aria-label={t("playback.stopAria")}>
+                        {t("playback.stop")}
                     </button>
                     <button
                         type="button"
                         className={style.Button}
                         onClick={isPlaying ? player.pause : player.play}
                         disabled={editMode}
-                        aria-label={isPlaying ? "Pause playback" : "Play"}
+                        aria-label={isPlaying ? t("playback.pauseAria") : t("playback.playAria")}
                     >
-                        {isPlaying ? "⏸ Pause" : "▶ Play"}
+                        {isPlaying ? t("playback.pause") : t("playback.play")}
                     </button>
                 </div>
                 <div className={style.Time}>{formatTime(player.currentTime)} / {formatTime(duration)}</div>
                 <VolumeControl/>
                 <SoundSelector/>
                 {editMode && (
-                    <div className={style.Hint}>
-                        Select a key, then click its highlighted column to add a note. Drag a note to move it, drag its
-                        top or bottom edge to resize it, press Delete to remove it.
-                    </div>
+                    <div className={style.Hint}>{t("compose.hint")}</div>
                 )}
             </div>
             <Manual

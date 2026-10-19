@@ -7,6 +7,7 @@ import useHarmoniumSynth from "../../../hooks/useHarmoniumSynth.ts";
 import type {InstrumentTones} from "../../../hooks/useInstrumentTones.ts";
 import {KEY_COLOURS} from "../../../core/data/ManualLayout.ts";
 import Keyboard from "../../KeyboardView/Keyboard/Keyboard.tsx";
+import {useI18n} from "../../../i18n.tsx";
 
 type ManualProps = {
     layout: "original" | "compact" | "compose";
@@ -34,6 +35,7 @@ const KEYBOARD_KEYS = "1234567890qwertyuiopasdfghjklzxcvbnm,./".split("");
 
 export default function Manual({layout, instrument, playingFrequencies, activeKeys, selectionMode = false, selectedKey = null, onSelectKey, topSlot, onKeyDown, onKeyUp, showVolume = true}: ManualProps) {
     const {tones, registers, activeRegisterIds, toggleRegister, keyTones} = instrument;
+    const {t} = useI18n();
 
     const {playTone, stopTone, setVolume} = useHarmoniumSynth();
     const [pressedFrequencies, setPressedFrequencies] = useState<Set<number>>(new Set());
@@ -145,7 +147,7 @@ export default function Manual({layout, instrument, playingFrequencies, activeKe
             {showVolume && (
                 <div className={style.VolumeControl}>
                     <label>
-                        Volume
+                        {t("volume.label")}
                         <input
                             type="range"
                             min={-40}

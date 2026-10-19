@@ -1,5 +1,6 @@
 import style from "./RegisterSelector.module.scss";
 import type {Register} from "../../../core/data/RegisterConfiguration.ts";
+import {useI18n} from "../../../i18n.tsx";
 
 interface RegisterSelectorProps {
     registers: Register[];
@@ -17,10 +18,11 @@ export default function RegisterSelector({
     onToggleRegister,
 }: RegisterSelectorProps) {
     const sortedRegisters = [...registers].sort((a, b) => a.id - b.id);
+    const {t} = useI18n();
 
     return (
         <div className={style.RegisterSelector}>
-            <h3 className={style.Title}>Registers</h3>
+            <h3 className={style.Title}>{t("register.title")}</h3>
 
             <div className={style.RegisterRow}>
                 {sortedRegisters.map(register => (

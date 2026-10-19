@@ -7,6 +7,12 @@ Currently, two official plugins are available:
 - [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
 - [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
+## Languages
+
+The app includes English and German. It initially follows the browser language (English is the fallback), and the language selector saves the user's choice for future visits.
+
+UI translations are centralized in `src/i18n.tsx`. When adding or changing UI copy, update both language dictionaries and use the `t` function from `useI18n` in components. TypeScript checks that both dictionaries contain the same translation keys.
+
 ## Expanding the ESLint configuration
 
 If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:

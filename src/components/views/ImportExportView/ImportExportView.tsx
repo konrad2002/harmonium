@@ -4,6 +4,7 @@ import MidiImporter from "../../ImportExport/MidiImporter/MidiImporter.tsx";
 import MidiExporter from "../../ImportExport/MidiExporter/MidiExporter.tsx";
 import type {Song} from "../../../core/model/Song.ts";
 import type {HarmoniumTone} from "../../../core/model/HarmoniumTone.ts";
+import {useI18n} from "../../../i18n.tsx";
 
 interface ImportExportViewProps {
     availableTones?: HarmoniumTone[];
@@ -19,13 +20,14 @@ export default function ImportExportView({
     onSongImported,
 }: ImportExportViewProps) {
     const [activeTab, setActiveTab] = useState<Tab>("import");
+    const {t} = useI18n();
 
     return (
         <div className={style.ImportExportView}>
             {/* Header */}
             <div className={style.Header}>
-                <h1>Import / Export</h1>
-                <p>Transfer songs between Harmonium and other applications</p>
+                <h1>{t("navigation.importExport")}</h1>
+                <p>{t("importExport.description")}</p>
             </div>
 
             {/* Tab navigation */}
@@ -34,13 +36,13 @@ export default function ImportExportView({
                     className={`${style.TabButton} ${activeTab === "import" ? style.Active : ""}`}
                     onClick={() => setActiveTab("import")}
                 >
-                    📥 Import
+                    {t("importExport.import")}
                 </button>
                 <button
                     className={`${style.TabButton} ${activeTab === "export" ? style.Active : ""}`}
                     onClick={() => setActiveTab("export")}
                 >
-                    📤 Export
+                    {t("importExport.export")}
                 </button>
             </div>
 
@@ -64,39 +66,23 @@ export default function ImportExportView({
 
             {/* Info section */}
             <div className={style.InfoSection}>
-                <h2>About Import/Export</h2>
+                <h2>{t("importExport.about")}</h2>
                 <div className={style.InfoGrid}>
                     <div className={style.InfoCard}>
-                        <h3>MIDI Support</h3>
-                        <p>
-                            Import standard MIDI files from any DAW or music software. MIDI notes are
-                            automatically mapped to the closest harmonium tones. Export your compositions
-                            as MIDI for use in other applications.
-                        </p>
+                        <h3>{t("importExport.midiSupport")}</h3>
+                        <p>{t("importExport.midiSupportDescription")}</p>
                     </div>
                     <div className={style.InfoCard}>
-                        <h3>JSON Projects</h3>
-                        <p>
-                            Save songs as JSON to preserve exact harmonium frequencies and all editing
-                            data. JSON files can be re-imported without any frequency loss or
-                            approximation.
-                        </p>
+                        <h3>{t("importExport.jsonProjects")}</h3>
+                        <p>{t("importExport.jsonDescription")}</p>
                     </div>
                     <div className={style.InfoCard}>
-                        <h3>Non-12-TET Tuning</h3>
-                        <p>
-                            The Eitz Harmonium uses a special tuning system (not equal temperament).
-                            When exporting to MIDI, frequencies are mapped to the closest 12-TET notes
-                            for compatibility.
-                        </p>
+                        <h3>{t("importExport.tuning")}</h3>
+                        <p>{t("importExport.tuningDescription")}</p>
                     </div>
                     <div className={style.InfoCard}>
-                        <h3>Pitch Mapping</h3>
-                        <p>
-                            Import uses intelligent frequency-matching to find the closest harmonium
-                            tone for each MIDI note. This preserves the musical intent while adapting
-                            to the harmonium's unique tuning.
-                        </p>
+                        <h3>{t("importExport.pitchMapping")}</h3>
+                        <p>{t("importExport.pitchDescription")}</p>
                     </div>
                 </div>
             </div>

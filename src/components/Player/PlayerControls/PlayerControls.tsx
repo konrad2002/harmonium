@@ -1,6 +1,7 @@
 import style from "./PlayerControls.module.scss";
 import useSongPlayer from "../../../hooks/useSongPlayer.ts";
 import type {Song} from "../../../core/model/Song.ts";
+import {useI18n} from "../../../i18n.tsx";
 
 type PlayerControlsProps = {
     song: Song | null;
@@ -9,6 +10,7 @@ type PlayerControlsProps = {
 
 export default function PlayerControls({song, onPlayingFrequencies}: PlayerControlsProps) {
     const {state, currentTime, duration, play, pause, stop, seek} = useSongPlayer(song, {onPlayingFrequencies});
+    const {t} = useI18n();
 
     function formatTime(seconds: number): string {
         const mins = Math.floor(seconds / 60);
@@ -26,18 +28,18 @@ export default function PlayerControls({song, onPlayingFrequencies}: PlayerContr
                     className={style.Button}
                     onClick={stop}
                     disabled={!song}
-                    aria-label="Stop playback"
+                    aria-label={t("playback.stopAria")}
                 >
-                    ⏹ Stop
+                    {t("playback.stop")}
                 </button>
                 <button
                     type="button"
                     className={style.Button}
                     onClick={isPlaying ? pause : play}
                     disabled={!song}
-                    aria-label={isPlaying ? "Pause playback" : "Play"}
+                    aria-label={isPlaying ? t("playback.pauseAria") : t("playback.playAria")}
                 >
-                    {isPlaying ? "⏸ Pause" : "▶ Play"}
+                    {isPlaying ? t("playback.pause") : t("playback.play")}
                 </button>
             </div>
 
@@ -55,7 +57,7 @@ export default function PlayerControls({song, onPlayingFrequencies}: PlayerContr
                     value={currentTime}
                     onChange={(e) => seek(Number(e.target.value))}
                     disabled={!song}
-                    aria-label="Seek position"
+                    aria-label={t("playback.seek")}
                 />
             </div>
         </div>

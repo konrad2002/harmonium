@@ -14,6 +14,27 @@
   color: var(--color-fg);
 }
 
+.Actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.LanguageSelector {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-fg);
+}
+
+.LanguageSelector select {
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  color: var(--color-fg);
+  background-color: var(--color-surface);
+  padding: 6px;
+}
+
 .ThemeToggle {
   background: none;
   border: 1px solid var(--color-border);

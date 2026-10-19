@@ -1,11 +1,12 @@
 import style from "./ViewNav.module.scss";
+import {useI18n} from "../../../i18n.tsx";
 
 export type AppView = "play" | "compose" | "import-export";
 
-const VIEWS: { id: AppView; label: string }[] = [
-    {id: "play", label: "Play"},
-    {id: "compose", label: "Compose"},
-    {id: "import-export", label: "Import / Export"},
+const VIEWS: { id: AppView }[] = [
+    {id: "play"},
+    {id: "compose"},
+    {id: "import-export"},
 ];
 
 type ViewNavProps = {
@@ -14,6 +15,8 @@ type ViewNavProps = {
 };
 
 export default function ViewNav({activeView, onSelectView}: ViewNavProps) {
+    const {t} = useI18n();
+
     return (
         <nav className={style.ViewNav}>
             {VIEWS.map(view => (
@@ -23,7 +26,9 @@ export default function ViewNav({activeView, onSelectView}: ViewNavProps) {
                     className={`${style.ViewNavButton} ${view.id === activeView ? style.ViewNavButtonActive : ""}`}
                     onClick={() => onSelectView(view.id)}
                 >
-                    {view.label}
+                    {view.id === "play" ? t("navigation.play")
+                        : view.id === "compose" ? t("navigation.compose")
+                            : t("navigation.importExport")}
                 </button>
             ))}
         </nav>

@@ -1,5 +1,6 @@
 import style from "./SongSelector.module.scss";
 import type {Song} from "../../../core/model/Song.ts";
+import {translateSongTitle, useI18n} from "../../../i18n.tsx";
 
 type SongSelectorProps = {
     songs: Song[];
@@ -8,9 +9,11 @@ type SongSelectorProps = {
 };
 
 export default function SongSelector({songs, selectedSong, onSelectSong}: SongSelectorProps) {
+    const {t} = useI18n();
+
     return (
         <div className={style.SongSelector}>
-            <label htmlFor="song-select">Pre-programmed piece:</label>
+            <label htmlFor="song-select">{t("song.presetLabel")}</label>
             <select
                 id="song-select"
                 value={selectedSong?.title ?? ""}
@@ -19,10 +22,10 @@ export default function SongSelector({songs, selectedSong, onSelectSong}: SongSe
                     if (song) onSelectSong(song);
                 }}
             >
-                <option value="">-- Select a song --</option>
+                <option value="">{t("song.selectPlaceholder")}</option>
                 {songs.map(song => (
                     <option key={song.title} value={song.title}>
-                        {song.title}
+                        {translateSongTitle(song.title, t)}
                     </option>
                 ))}
             </select>

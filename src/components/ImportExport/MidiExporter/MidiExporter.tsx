@@ -1,19 +1,22 @@
 import style from "./MidiExporter.module.scss";
 import {downloadSongAsMidi, downloadSongAsJson} from "../../../core/helper/MidiHelper.ts";
 import type {Song} from "../../../core/model/Song.ts";
+import {translateSongTitle, useI18n} from "../../../i18n.tsx";
 
 interface MidiExporterProps {
     song: Song | null;
 }
 
 export default function MidiExporter({song}: MidiExporterProps) {
+    const {t} = useI18n();
+
     const handleExportMidi = () => {
         if (!song) return;
         try {
             downloadSongAsMidi(song);
         } catch (err) {
             console.error("Failed to export MIDI:", err);
-            alert("Failed to export as MIDI");
+            alert(t("midiExport.failedMidi"));
         }
     };
 
@@ -23,62 +26,54 @@ export default function MidiExporter({song}: MidiExporterProps) {
             downloadSongAsJson(song);
         } catch (err) {
             console.error("Failed to export JSON:", err);
-            alert("Failed to export as JSON");
+            alert(t("midiExport.failedJson"));
         }
     };
 
     return (
         <div className={style.MidiExporter}>
             <div className={style.Section}>
-                <h3>Export Song</h3>
+                <h3>{t("midiExport.title")}</h3>
                 {song ? (
                     <>
                         <p>
-                            Exporting: <strong>{song.title}</strong> ({song.notes.length} notes)
+                            {t("midiExport.exporting", {title: translateSongTitle(song.title, t), count: song.notes.length})}
                         </p>
 
                         <div className={style.ButtonGroup}>
                             <button
                                 className={`${style.Button} ${style.Primary}`}
                                 onClick={handleExportMidi}
-                                title="Export as MIDI file (.mid)"
+                                title={t("midiExport.midiTitle")}
                             >
-                                📥 Export as MIDI
+                                {t("midiExport.midi")}
                             </button>
                             <button
                                 className={`${style.Button} ${style.Secondary}`}
                                 onClick={handleExportJson}
-                                title="Export as JSON project file"
+                                title={t("midiExport.jsonTitle")}
                             >
-                                📥 Export as JSON
+                                {t("midiExport.json")}
                             </button>
                         </div>
 
                         <div className={style.Info}>
-                            <h4>Export formats</h4>
+                            <h4>{t("midiExport.formats")}</h4>
                             <div className={style.FormatInfo}>
                                 <div>
-                                    <strong>MIDI (.mid)</strong>
-                                    <p>
-                                        Standard MIDI format compatible with DAWs and other music
-                                        software. Harmonium frequencies are mapped to the closest
-                                        MIDI notes (12-TET).
-                                    </p>
+                                    <strong>{t("midiExport.midiFormat")}</strong>
+                                    <p>{t("midiExport.midiDescription")}</p>
                                 </div>
                                 <div>
                                     <strong>JSON</strong>
-                                    <p>
-                                        Harmonium-native format preserving exact frequencies and all
-                                        metadata. Can be re-imported to continue editing without
-                                        frequency loss.
-                                    </p>
+                                    <p>{t("midiExport.jsonDescription")}</p>
                                 </div>
                             </div>
                         </div>
                     </>
                 ) : (
                     <div className={style.NoSong}>
-                        <p>No song loaded. Create or import a song in the Compose or Import tabs.</p>
+                        <p>{t("midiExport.noSong")}</p>
                     </div>
                 )}
             </div>

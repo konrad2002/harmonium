@@ -1,11 +1,17 @@
 import style from "./Keyboard.module.scss";
+import {useI18n} from "../../../i18n.tsx";
+
+const NOTE_KEYS = [
+  "keyboard.note0", "keyboard.note1", "keyboard.note2", "keyboard.note3",
+  "keyboard.note4", "keyboard.note5", "keyboard.note6", "keyboard.note7",
+  "keyboard.note8", "keyboard.note9", "keyboard.note10", "keyboard.note11",
+] as const;
 
 export default function Keyboard() {
-
+  const {t} = useI18n();
 
   function getName(i: number): string {
-    const names = ["C", "Cis/Des", "D", "Dis/Es", "E", "F", "Fis/Ges", "G", "Gis/As", "A", "Ais/b", "H"];
-    return names[i % 12];
+    return t(NOTE_KEYS[i % 12]);
   }
 
   const keys = [];
