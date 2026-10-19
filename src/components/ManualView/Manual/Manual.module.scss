@@ -1,7 +1,7 @@
 .ManualKeyRow {
   display: inline-block;
   vertical-align: top;
-  height: calc(100% - 128px);
+  height: 100%;
 }
 
 .VolumeControl {
@@ -31,7 +31,7 @@
 }
 
 .original .Keys {
-  height: calc(100vh - 90px);
+  height: calc(100vh - 218px);
 }
 
 .compact .Keys {
@@ -39,7 +39,7 @@
 }
 
 .compose .Keys {
-  height: 460px;
+  height: 332px;
 }
 
 // Fills a flex column parent; the piano keeps its size, the timeline (6) and keys (4) share the rest
