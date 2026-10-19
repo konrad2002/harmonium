@@ -1,6 +1,7 @@
 import {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import style from "./ComposeView.module.scss";
 import Manual from "../../ManualView/Manual/Manual.tsx";
+import RegisterSelector from "../../ManualView/RegisterSelector/RegisterSelector.tsx";
 import ComposeTimeline from "../../Compose/ComposeTimeline/ComposeTimeline.tsx";
 import VolumeControl from "../../Player/VolumeControl/VolumeControl.tsx";
 import SoundSelector from "../../Player/SoundSelector/SoundSelector.tsx";
@@ -107,6 +108,11 @@ export default function ComposeView() {
 
     return (
         <>
+            <RegisterSelector
+                registers={instrument.registers}
+                activeRegisterIds={instrument.activeRegisterIds}
+                onToggleRegister={instrument.toggleRegister}
+            />
             <div className={style.Controls}>
                 <div className={style.ButtonGroup}>
                     <button
@@ -147,6 +153,7 @@ export default function ComposeView() {
                 selectedKey={selectedKey}
                 onSelectKey={setSelectedKey}
                 showVolume={false}
+                showRegisters={false}
                 topSlot={
                     <ComposeTimeline
                         notes={notes}

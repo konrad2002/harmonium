@@ -28,12 +28,14 @@ type ManualProps = {
     onKeyUp?: (frequency: number) => void;
     // Show the manual's own volume slider (default true)
     showVolume?: boolean;
+    // Show the register selector above the keys (default true)
+    showRegisters?: boolean;
 }
 
 // Sequential computer-keyboard shortcuts for the first keys of the manual (by tone index).
 const KEYBOARD_KEYS = "1234567890qwertyuiopasdfghjklzxcvbnm,./".split("");
 
-export default function Manual({layout, instrument, playingFrequencies, activeKeys, selectionMode = false, selectedKey = null, onSelectKey, topSlot, onKeyDown, onKeyUp, showVolume = true}: ManualProps) {
+export default function Manual({layout, instrument, playingFrequencies, activeKeys, selectionMode = false, selectedKey = null, onSelectKey, topSlot, onKeyDown, onKeyUp, showVolume = true, showRegisters = true}: ManualProps) {
     const {tones, registers, activeRegisterIds, toggleRegister, keyTones} = instrument;
     const {t} = useI18n();
 
@@ -159,11 +161,13 @@ export default function Manual({layout, instrument, playingFrequencies, activeKe
                     </label>
                 </div>
             )}
-            <RegisterSelector
-                registers={registers}
-                activeRegisterIds={activeRegisterIds}
-                onToggleRegister={toggleRegister}
-            />
+            {showRegisters && (
+                <RegisterSelector
+                    registers={registers}
+                    activeRegisterIds={activeRegisterIds}
+                    onToggleRegister={toggleRegister}
+                />
+            )}
             <div className={style.Scroller}>
                 <div className={style[layout]}>
                     {topSlot}
