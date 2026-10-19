@@ -2,7 +2,7 @@ import ManualKey from "../ManualKey/ManualKey.tsx";
 import style from "./Manual.module.scss";
 import ManualKeySpacer from "../ManualKeySpacer/ManualKeySpacer.tsx";
 import RegisterSelector from "../RegisterSelector/RegisterSelector.tsx";
-import {useCallback, useEffect, useState, type ReactNode} from "react";
+import {useCallback, useEffect, useRef, useState, type ReactNode} from "react";
 import useHarmoniumSynth from "../../../hooks/useHarmoniumSynth.ts";
 import type {InstrumentTones} from "../../../hooks/useInstrumentTones.ts";
 import {KEY_COLOURS} from "../../../core/data/ManualLayout.ts";
@@ -37,11 +37,11 @@ type ManualProps = {
     fill?: boolean;
 }
 
-// Sequential computer-keyboard shortcuts for the first keys of the manual (by tone index).
+// Computer keys that play the first keys of the manual (left to right, column by column).
 const KEYBOARD_KEYS = "1234567890qwertyuiopasdfghjklzxcvbnm,./".split("");
 
 export default function Manual({layout, instrument, playingFrequencies, activeKeys, selectionMode = false, selectedKey = null, onSelectKey, topSlot, onKeyDown, onKeyUp, showVolume = true, showRegisters = true, showFrequencies = true, fill = false}: ManualProps) {
-    const {tones, registers, activeRegisterIds, toggleRegister, keyTones} = instrument;
+    const {registers, activeRegisterIds, toggleRegister, keyTones} = instrument;
     const {t} = useI18n();
 
     const {playTone, stopTone, setVolume} = useHarmoniumSynth();
@@ -63,28 +63,47 @@ export default function Manual({layout, instrument, playingFrequencies, activeKe
         });
     }, [stopTone, onKeyUp]);
 
-    // Play the first tones via the computer keyboard (only covers a subset of all manual keys).
+    // Held computer keys by physical key (e.code): a release must find the note that its press
+    // started, even when Shift/Caps Lock changed the character (e.key) in between.
+    const heldKeysRef = useRef(new Map<string, number>());
+
+    // Play the first manual keys via the computer keyboard, with their register tones.
     useEffect(() => {
+        const held = heldKeysRef.current;
+
         function handleKeyDown(e: KeyboardEvent) {
-            if (e.repeat) return;
-            const index = KEYBOARD_KEYS.indexOf(e.key);
-            if (index === -1 || index >= tones.length) return;
-            press(tones[index].frequency);
+            if (e.repeat || held.has(e.code) || e.metaKey || e.ctrlKey || e.altKey) return;
+            const index = KEYBOARD_KEYS.indexOf(e.key.toLowerCase());
+            const tone = index === -1 ? null : keyTones[index];
+            if (!tone) return;
+
+            held.set(e.code, tone.frequency);
+            press(tone.frequency);
         }
 
         function handleKeyUp(e: KeyboardEvent) {
-            const index = KEYBOARD_KEYS.indexOf(e.key);
-            if (index === -1 || index >= tones.length) return;
-            release(tones[index].frequency);
+            const frequency = held.get(e.code);
+            if (frequency === undefined) return;
+
+            held.delete(e.code);
+            release(frequency);
+        }
+
+        // keyup is not delivered after the window lost focus
+        function releaseAll() {
+            for (const frequency of held.values()) release(frequency);
+            held.clear();
         }
 
         window.addEventListener("keydown", handleKeyDown);
         window.addEventListener("keyup", handleKeyUp);
+        window.addEventListener("blur", releaseAll);
         return () => {
             window.removeEventListener("keydown", handleKeyDown);
             window.removeEventListener("keyup", handleKeyUp);
+            window.removeEventListener("blur", releaseAll);
         };
-    }, [tones, press, release]);
+    }, [keyTones, press, release]);
 
     const buttons = [];
 
