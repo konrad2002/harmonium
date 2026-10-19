@@ -1,3 +1,19 @@
+.Fullscreen {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    padding-top: 8px;
+    background-color: var(--color-bg);
+    overflow: hidden;
+
+    .Controls {
+        flex: none;
+        margin: 0 8px 8px;
+    }
+}
+
 .Controls {
     display: flex;
     flex-wrap: wrap;

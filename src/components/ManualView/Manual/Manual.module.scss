@@ -42,6 +42,23 @@
   height: 460px;
 }
 
+// Fills a flex column parent; the piano keeps its size, the timeline (6) and keys (4) share the rest
+.ScrollerFill {
+  flex: 1 1 0;
+  min-height: 0;
+}
+
+.InnerFill {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  .Keys {
+    flex: 4 1 0;
+    min-height: 0;
+  }
+}
+
 .ManualRow1 {
   //background-color: #00ffe0;
   color: var(--color-fg);

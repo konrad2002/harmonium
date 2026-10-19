@@ -9,6 +9,12 @@
   border-bottom: 1px solid var(--color-border);
 }
 
+.TimelineFill {
+  height: auto;
+  flex: 6 1 0;
+  min-height: 0;
+}
+
 .Scroll {
   height: 100%;
   overflow-x: hidden;

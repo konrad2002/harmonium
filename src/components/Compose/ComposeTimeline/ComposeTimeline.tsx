@@ -23,6 +23,8 @@ type ComposeTimelineProps = {
     onAddNote?: (key: number, start: number) => void;
     onChangeNote?: (id: string, change: {start: number; duration: number}) => void;
     onSelectNote?: (id: string | null) => void;
+    // Take 6 parts of the free height of a flex column parent instead of a fixed height
+    fill?: boolean;
 };
 
 const COLUMNS = Array.from({length: MANUAL_ROW_COUNT}, (_, column) => column);
@@ -35,7 +37,7 @@ type Drag = {id: string; mode: NoteDragMode; startY: number; note: ComposeNote};
  */
 export default function ComposeTimeline({
     notes, keyTones, activeNoteIds, duration, pixelsPerSecond, scrollRef, onScroll,
-    editable = false, selectedKey = null, selectedNoteId = null, onAddNote, onChangeNote, onSelectNote,
+    editable = false, selectedKey = null, selectedNoteId = null, onAddNote, onChangeNote, onSelectNote, fill = false,
 }: ComposeTimelineProps) {
     const lanes = useMemo(() => assignLanes(notes, key => KEY_COLUMNS[key]), [notes]);
     const dragRef = useRef<Drag | null>(null);
@@ -78,7 +80,7 @@ export default function ComposeTimeline({
     }
 
     return (
-        <div className={style.Timeline}>
+        <div className={`${style.Timeline} ${fill ? style.TimelineFill : ""}`}>
             <div className={style.Scroll} ref={scrollRef} onScroll={onScroll}>
                 <div
                     className={style.Content}

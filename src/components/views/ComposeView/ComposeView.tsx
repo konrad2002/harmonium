@@ -48,6 +48,47 @@ export default function ComposeView() {
         setSelectedNoteId(null);
     }, [editMode, stopPlayback]);
 
+    // Fullscreen: a fixed overlay (works everywhere), plus the browser's fullscreen where available
+    const wrapperRef = useRef<HTMLDivElement>(null);
+    const [fullscreen, setFullscreen] = useState(false);
+
+    const exitFullscreen = useCallback(() => {
+        setFullscreen(false);
+        if (document.fullscreenElement) void document.exitFullscreen();
+    }, []);
+
+    const toggleFullscreen = useCallback(() => {
+        if (fullscreen) {
+            exitFullscreen();
+            return;
+        }
+        setFullscreen(true);
+        wrapperRef.current?.requestFullscreen?.()?.catch(() => {
+            // The overlay alone is enough when the browser refuses
+        });
+    }, [fullscreen, exitFullscreen]);
+
+    useEffect(() => {
+        // Leaving the browser's fullscreen (e.g. with Escape) also leaves ours
+        const handleChange = () => {
+            if (!document.fullscreenElement) setFullscreen(false);
+        };
+        document.addEventListener("fullscreenchange", handleChange);
+        return () => {
+            document.removeEventListener("fullscreenchange", handleChange);
+            if (document.fullscreenElement) void document.exitFullscreen();
+        };
+    }, []);
+
+    useEffect(() => {
+        if (!fullscreen) return;
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === "Escape") exitFullscreen();
+        };
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, [fullscreen, exitFullscreen]);
+
     const addNote = useCallback((key: number, start: number) => {
         const id = crypto.randomUUID();
         setNotes(prev => [...prev, {id, key, start, duration: DEFAULT_NOTE_DURATION}]);
@@ -107,12 +148,14 @@ export default function ComposeView() {
     const isPlaying = player.state === "playing";
 
     return (
-        <>
-            <RegisterSelector
-                registers={instrument.registers}
-                activeRegisterIds={instrument.activeRegisterIds}
-                onToggleRegister={instrument.toggleRegister}
-            />
+        <div ref={wrapperRef} className={fullscreen ? style.Fullscreen : undefined}>
+            {!fullscreen && (
+                <RegisterSelector
+                    registers={instrument.registers}
+                    activeRegisterIds={instrument.activeRegisterIds}
+                    onToggleRegister={instrument.toggleRegister}
+                />
+            )}
             <div className={style.Controls}>
                 <div className={style.ButtonGroup}>
                     <button
@@ -141,6 +184,11 @@ export default function ComposeView() {
                 <div className={style.Time}>{formatTime(player.currentTime)} / {formatTime(duration)}</div>
                 <VolumeControl/>
                 <SoundSelector/>
+                <div className={style.ButtonGroup}>
+                    <button type="button" className={style.Button} onClick={toggleFullscreen} aria-pressed={fullscreen}>
+                        {fullscreen ? t("compose.exitFullscreen") : t("compose.fullscreen")}
+                    </button>
+                </div>
                 {editMode && (
                     <div className={style.Hint}>{t("compose.hint")}</div>
                 )}
@@ -155,6 +203,7 @@ export default function ComposeView() {
                 showVolume={false}
                 showRegisters={false}
                 showFrequencies={false}
+                fill={fullscreen}
                 topSlot={
                     <ComposeTimeline
                         notes={notes}
@@ -170,9 +219,10 @@ export default function ComposeView() {
                         onAddNote={addNote}
                         onChangeNote={changeNote}
                         onSelectNote={setSelectedNoteId}
+                        fill={fullscreen}
                     />
                 }
             />
-        </>
+        </div>
     );
 }

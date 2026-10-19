@@ -32,12 +32,15 @@ type ManualProps = {
     showRegisters?: boolean;
     // Show the frequency next to the tone name on the keys (default true)
     showFrequencies?: boolean;
+    // Fill the height of a flex column parent: the topSlot gets 60% and the keys 40% of the space
+    // left over by the piano reference. The topSlot has to take part in that flex layout.
+    fill?: boolean;
 }
 
 // Sequential computer-keyboard shortcuts for the first keys of the manual (by tone index).
 const KEYBOARD_KEYS = "1234567890qwertyuiopasdfghjklzxcvbnm,./".split("");
 
-export default function Manual({layout, instrument, playingFrequencies, activeKeys, selectionMode = false, selectedKey = null, onSelectKey, topSlot, onKeyDown, onKeyUp, showVolume = true, showRegisters = true, showFrequencies = true}: ManualProps) {
+export default function Manual({layout, instrument, playingFrequencies, activeKeys, selectionMode = false, selectedKey = null, onSelectKey, topSlot, onKeyDown, onKeyUp, showVolume = true, showRegisters = true, showFrequencies = true, fill = false}: ManualProps) {
     const {tones, registers, activeRegisterIds, toggleRegister, keyTones} = instrument;
     const {t} = useI18n();
 
@@ -171,8 +174,8 @@ export default function Manual({layout, instrument, playingFrequencies, activeKe
                     onToggleRegister={toggleRegister}
                 />
             )}
-            <div className={style.Scroller}>
-                <div className={style[layout]}>
+            <div className={`${style.Scroller} ${fill ? style.ScrollerFill : ""}`}>
+                <div className={`${style[layout]} ${fill ? style.InnerFill : ""}`}>
                     {topSlot}
                     <Keyboard/>
                     <div className={style.Keys}>
