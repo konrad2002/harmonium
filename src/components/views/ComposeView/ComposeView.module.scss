@@ -23,9 +23,27 @@
     padding: 3px 10px;
     cursor: pointer;
 
-    &:hover {
+    &:hover:not(:disabled) {
         border-color: var(--color-accent);
     }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+}
+
+.ButtonActive {
+    border-color: var(--color-accent);
+    background-color: var(--color-accent);
+    color: var(--color-accent-fg);
+}
+
+.Hint {
+    flex-basis: 100%;
+    font-size: 0.85rem;
+    color: var(--color-fg);
+    opacity: 0.8;
 }
 
 .Time {

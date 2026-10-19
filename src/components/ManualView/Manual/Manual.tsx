@@ -16,6 +16,10 @@ type ManualProps = {
     playingFrequencies?: Set<number>;
     // Keys (by index) to show as pressed, e.g. while a timeline plays
     activeKeys?: ReadonlySet<number>;
+    // Selection mode: pressing a key also selects it (for editing) instead of only playing it
+    selectionMode?: boolean;
+    selectedKey?: number | null;
+    onSelectKey?: (keyIndex: number) => void;
     // Rendered inside the horizontally scrolling area, above the piano reference
     topSlot?: ReactNode;
     // Callbacks for recording key presses
@@ -28,7 +32,7 @@ type ManualProps = {
 // Sequential computer-keyboard shortcuts for the first keys of the manual (by tone index).
 const KEYBOARD_KEYS = "1234567890qwertyuiopasdfghjklzxcvbnm,./".split("");
 
-export default function Manual({layout, instrument, playingFrequencies, activeKeys, topSlot, onKeyDown, onKeyUp, showVolume = true}: ManualProps) {
+export default function Manual({layout, instrument, playingFrequencies, activeKeys, selectionMode = false, selectedKey = null, onSelectKey, topSlot, onKeyDown, onKeyUp, showVolume = true}: ManualProps) {
     const {tones, registers, activeRegisterIds, toggleRegister, keyTones} = instrument;
 
     const {playTone, stopTone, setVolume} = useHarmoniumSynth();
@@ -98,12 +102,19 @@ export default function Manual({layout, instrument, playingFrequencies, activeKe
                     key={j}
                     keyColor={colour}
                     tone={tone}
+                    selected={selectionMode && selectedKey === keyIndex}
                     pressed={(!!tone && (pressedFrequencies.has(tone.frequency) || playingFrequencies?.has(tone.frequency))) || activeKeys?.has(keyIndex) || false}
-                    onMouseDown={() => tone && press(tone.frequency)}
+                    onMouseDown={() => {
+                        if (!tone) return;
+                        if (selectionMode) onSelectKey?.(keyIndex);
+                        press(tone.frequency);
+                    }}
                     onMouseUp={() => tone && release(tone.frequency)}
                     onMouseLeave={() => tone && pressedFrequencies.has(tone.frequency) && release(tone.frequency)}
                     onTouchStart={() => {
-                        if (tone) press(tone.frequency);
+                        if (!tone) return;
+                        if (selectionMode) onSelectKey?.(keyIndex);
+                        press(tone.frequency);
                     }}
                     onTouchEnd={(e) => {
                         // Suppress emulated mouse events that would retrigger the note

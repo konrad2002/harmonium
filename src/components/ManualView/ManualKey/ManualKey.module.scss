@@ -21,6 +21,12 @@
   touch-action: auto;
 }
 
+.ManualKeySelected {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 1px;
+  box-shadow: 0 0 10px 3px var(--register-active-shadow);
+}
+
 .ManualKeyText {
   writing-mode: vertical-rl;
   font-size: 11px;

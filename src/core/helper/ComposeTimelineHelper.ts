@@ -1,5 +1,42 @@
 import type {ComposeNote} from "../model/ComposeNote.ts";
 
+/** Notes snap to multiples of this many seconds while editing. */
+export const SNAP_STEP = 0.125;
+
+/** Length of a newly added note in seconds. */
+export const DEFAULT_NOTE_DURATION = 0.5;
+
+export function snapTime(time: number, step = SNAP_STEP): number {
+    return Math.round(time / step) * step;
+}
+
+// move: shifts the note; resize-end: the upper edge (end); resize-start: the lower edge (start)
+export type NoteDragMode = "move" | "resize-start" | "resize-end";
+
+/**
+ * New start and duration of `note` after dragging it by `deltaSeconds` (positive = later).
+ * Results snap to the grid, never start before 0 and never get shorter than one step.
+ */
+export function dragNote(
+    note: ComposeNote,
+    mode: NoteDragMode,
+    deltaSeconds: number,
+    step = SNAP_STEP
+): {start: number; duration: number} {
+    const end = note.start + note.duration;
+
+    if (mode === "move") {
+        return {start: Math.max(0, snapTime(note.start + deltaSeconds, step)), duration: note.duration};
+    }
+
+    if (mode === "resize-end") {
+        return {start: note.start, duration: Math.max(step, snapTime(end + deltaSeconds, step) - note.start)};
+    }
+
+    const start = Math.min(Math.max(0, snapTime(note.start + deltaSeconds, step)), end - step);
+    return {start, duration: end - start};
+}
+
 export interface NoteLane {
     lane: number;
     // Number of lanes shared by the cluster of overlapping notes this note belongs to.

@@ -45,6 +45,12 @@
   background-color: var(--color-surface);
 }
 
+// Column of the selected key: the place where clicking adds a note
+.ColumnTarget {
+  background-color: color-mix(in srgb, var(--color-accent) 25%, transparent);
+  cursor: crosshair;
+}
+
 .Note {
   position: absolute;
   box-sizing: border-box;
@@ -69,6 +75,36 @@
 
 .NoteUnassigned {
   filter: brightness(0.5) grayscale(0.6);
+}
+
+.NoteEditable {
+  cursor: grab;
+  // Dragging must not scroll the timeline
+  touch-action: none;
+}
+
+.NoteSelected {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
+  z-index: 1;
+}
+
+// Grab zones on the upper (end) and lower (start) edge for resizing
+.HandleEnd, .HandleStart {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: min(6px, 35%);
+  background-color: rgba(0, 0, 0, 0.35);
+  cursor: ns-resize;
+}
+
+.HandleEnd {
+  top: 0;
+}
+
+.HandleStart {
+  bottom: 0;
 }
 
 // Fixed line at the bottom edge; the key below sounds while a box overlaps it

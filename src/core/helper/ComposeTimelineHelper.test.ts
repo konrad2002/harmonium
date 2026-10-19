@@ -1,6 +1,6 @@
 import {describe, it, expect} from "vitest";
 import type {ComposeNote} from "../model/ComposeNote.ts";
-import {assignLanes, getActiveKeys, getActiveNotes, getCompositionDuration} from "./ComposeTimelineHelper.ts";
+import {assignLanes, dragNote, getActiveKeys, getActiveNotes, getCompositionDuration, snapTime} from "./ComposeTimelineHelper.ts";
 import {EXAMPLE_COMPOSITION} from "../data/ExampleComposition.ts";
 import {KEY_COLUMNS, KEY_COUNT} from "../data/ManualLayout.ts";
 
@@ -18,6 +18,34 @@ describe("getCompositionDuration", () => {
 
     it("is the end of the last finishing note", () => {
         expect(getCompositionDuration([note("a", 0, 0, 5), note("b", 1, 2, 1)])).toBe(5);
+    });
+});
+
+describe("snapTime", () => {
+    it("rounds to the nearest grid step", () => {
+        expect(snapTime(0.19)).toBe(0.25);
+        expect(snapTime(0.06)).toBe(0);
+        expect(snapTime(1.01)).toBe(1);
+    });
+});
+
+describe("dragNote", () => {
+    const n = note("a", 0, 1, 0.5);
+
+    it("moves the note without changing its length", () => {
+        expect(dragNote(n, "move", 0.5)).toEqual({start: 1.5, duration: 0.5});
+        expect(dragNote(n, "move", -5)).toEqual({start: 0, duration: 0.5});
+    });
+
+    it("resizes the upper edge and keeps the start", () => {
+        expect(dragNote(n, "resize-end", 0.5)).toEqual({start: 1, duration: 1});
+        expect(dragNote(n, "resize-end", -5)).toEqual({start: 1, duration: 0.125});
+    });
+
+    it("resizes the lower edge and keeps the end", () => {
+        expect(dragNote(n, "resize-start", -0.25)).toEqual({start: 0.75, duration: 0.75});
+        expect(dragNote(n, "resize-start", 5)).toEqual({start: 1.375, duration: 0.125});
+        expect(dragNote(n, "resize-start", -5)).toEqual({start: 0, duration: 1.5});
     });
 });
 

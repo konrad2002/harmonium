@@ -7,6 +7,8 @@ type ManualKeyProps = {
   // Null when no register is active for this key's colour: the key is unassigned and silent.
   tone: HarmoniumTone | null;
   pressed?: boolean;
+  // Marked as the key chosen for editing
+  selected?: boolean;
   onMouseDown?: MouseEventHandler<HTMLDivElement>;
   onMouseUp?: MouseEventHandler<HTMLDivElement>;
   onMouseLeave?: MouseEventHandler<HTMLDivElement>;
@@ -15,7 +17,7 @@ type ManualKeyProps = {
   onTouchCancel?: TouchEventHandler<HTMLDivElement>;
 };
 
-export default function ManualKey({keyColor, tone, pressed, onMouseDown, onMouseUp, onMouseLeave, onTouchStart, onTouchEnd, onTouchCancel} : ManualKeyProps) {
+export default function ManualKey({keyColor, tone, pressed, selected, onMouseDown, onMouseUp, onMouseLeave, onTouchStart, onTouchEnd, onTouchCancel} : ManualKeyProps) {
 
   const colors = {
     red: "var(--manual-key-red)",
@@ -30,7 +32,7 @@ export default function ManualKey({keyColor, tone, pressed, onMouseDown, onMouse
     <>
       <div
         style={{backgroundColor: colors[keyColor]}}
-        className={`${styles.ManualKey} ${pressed ? styles.ManualKeyPressed : ""} ${!assigned ? styles.ManualKeyUnassigned : ""}`}
+        className={`${styles.ManualKey} ${pressed ? styles.ManualKeyPressed : ""} ${!assigned ? styles.ManualKeyUnassigned : ""} ${selected ? styles.ManualKeySelected : ""}`}
         onMouseDown={assigned ? onMouseDown : undefined}
         onMouseUp={assigned ? onMouseUp : undefined}
         onMouseLeave={assigned ? onMouseLeave : undefined}
