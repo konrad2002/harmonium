@@ -3,6 +3,7 @@ import style from "./ComposeView.module.scss";
 import Manual from "../../ManualView/Manual/Manual.tsx";
 import ComposeTimeline from "../../Compose/ComposeTimeline/ComposeTimeline.tsx";
 import VolumeControl from "../../Player/VolumeControl/VolumeControl.tsx";
+import SoundSelector from "../../Player/SoundSelector/SoundSelector.tsx";
 import useHarmoniumSynth from "../../../hooks/useHarmoniumSynth.ts";
 import {useInstrumentTones} from "../../../hooks/useInstrumentTones.ts";
 import useTimelinePlayer from "../../../hooks/useTimelinePlayer.ts";
@@ -80,6 +81,7 @@ export default function ComposeView() {
                 </div>
                 <div className={style.Time}>{formatTime(player.currentTime)} / {formatTime(duration)}</div>
                 <VolumeControl/>
+                <SoundSelector/>
             </div>
             <Manual
                 layout="compose"
@@ -90,7 +92,7 @@ export default function ComposeView() {
                     <ComposeTimeline
                         notes={notes}
                         keyTones={instrument.keyTones}
-                        activeKeys={player.activeKeys}
+                        activeNoteIds={player.activeNoteIds}
                         duration={duration}
                         pixelsPerSecond={PIXELS_PER_SECOND}
                         scrollRef={scrollRef}

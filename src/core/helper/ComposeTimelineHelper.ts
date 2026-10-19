@@ -11,15 +11,14 @@ export function getCompositionDuration(notes: ComposeNote[]): number {
     return notes.reduce((end, note) => Math.max(end, note.start + note.duration), 0);
 }
 
-/** Keys held at `time` (a note is held from its start up to, excluding, its end). */
+/** Notes held at `time` (a note is held from its start up to, excluding, its end). */
+export function getActiveNotes(notes: ComposeNote[], time: number): ComposeNote[] {
+    return notes.filter(note => note.start <= time && time < note.start + note.duration);
+}
+
+/** Keys held at `time`. */
 export function getActiveKeys(notes: ComposeNote[], time: number): Set<number> {
-    const keys = new Set<number>();
-    for (const note of notes) {
-        if (note.start <= time && time < note.start + note.duration) {
-            keys.add(note.key);
-        }
-    }
-    return keys;
+    return new Set(getActiveNotes(notes, time).map(note => note.key));
 }
 
 /**

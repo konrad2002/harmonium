@@ -1,22 +1,20 @@
-import {useCallback, useRef} from "react";
-import {now} from "tone";
-import useSynth from "./useSynth.ts";
+import {useCallback} from "react";
+import {getDestination} from "tone";
+import {getActiveEngine} from "../core/audio/soundEngines.ts";
 
-// Shared tone-playing engine for the harmonium instrument, used by any view
-// (Manual, Keyboard, future song playback) that needs to sound a frequency.
+// Sounds a frequency with the currently selected tone generation (synth or recorded sample),
+// for any view (Manual, song playback, compose) that needs to play the instrument.
 export default function useHarmoniumSynth() {
-    const synthRef = useRef(useSynth());
-
     const playTone = useCallback((frequency: number) => {
-        synthRef.current.triggerAttack(frequency, now(), 1.2);
+        getActiveEngine().playTone(frequency);
     }, []);
 
     const stopTone = useCallback((frequency: number) => {
-        synthRef.current.triggerRelease(frequency);
+        getActiveEngine().stopTone(frequency);
     }, []);
 
     const setVolume = useCallback((volumeDb: number) => {
-        synthRef.current.volume.value = volumeDb;
+        getDestination().volume.value = volumeDb;
     }, []);
 
     return {playTone, stopTone, setVolume};

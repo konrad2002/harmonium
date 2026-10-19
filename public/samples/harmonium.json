@@ -1,0 +1,8 @@
+{
+  "file": "harmonium_ton.wav",
+  "frequency": 172.67,
+  "hold": {
+    "start": 0.17,
+    "end": 0.2858
+  }
+}

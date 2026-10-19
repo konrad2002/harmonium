@@ -1,14 +1,14 @@
-import {useCallback, useEffect, useLayoutEffect, useRef, useState, type RefObject} from "react";
+import {useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type RefObject} from "react";
 import type {ComposeNote} from "../core/model/ComposeNote.ts";
-import {getActiveKeys} from "../core/helper/ComposeTimelineHelper.ts";
+import {getActiveNotes} from "../core/helper/ComposeTimelineHelper.ts";
 
 export type TimelinePlayerState = "stopped" | "playing" | "paused";
 
-const NO_KEYS: ReadonlySet<number> = new Set();
+const NO_NOTES: ReadonlySet<string> = new Set();
 
-function sameKeys(a: ReadonlySet<number>, b: ReadonlySet<number>): boolean {
+function sameIds(a: ReadonlySet<string>, b: ReadonlySet<string>): boolean {
     if (a.size !== b.size) return false;
-    for (const key of a) if (!b.has(key)) return false;
+    for (const id of a) if (!b.has(id)) return false;
     return true;
 }
 
@@ -28,12 +28,12 @@ type Options = {
  */
 export default function useTimelinePlayer({notes, duration, pixelsPerSecond, scrollRef}: Options) {
     const [state, setState] = useState<TimelinePlayerState>("stopped");
-    const [activeKeys, setActiveKeys] = useState<ReadonlySet<number>>(NO_KEYS);
+    const [activeNoteIds, setActiveNoteIds] = useState<ReadonlySet<string>>(NO_NOTES);
     // Rounded to tenths of a second so display updates don't re-render every frame
     const [displayTime, setDisplayTime] = useState(0);
 
     const timeRef = useRef(0);
-    const activeRef = useRef<ReadonlySet<number>>(NO_KEYS);
+    const activeRef = useRef<ReadonlySet<string>>(NO_NOTES);
 
     const applyScroll = useCallback((time: number) => {
         const element = scrollRef.current;
@@ -46,22 +46,27 @@ export default function useTimelinePlayer({notes, duration, pixelsPerSecond, scr
         setDisplayTime(Math.round(time * 10) / 10);
     }, [applyScroll]);
 
-    const publishActiveKeys = useCallback((keys: ReadonlySet<number>) => {
-        if (sameKeys(keys, activeRef.current)) return;
-        activeRef.current = keys;
-        setActiveKeys(keys);
+    const publishActiveNotes = useCallback((ids: ReadonlySet<string>) => {
+        if (sameIds(ids, activeRef.current)) return;
+        activeRef.current = ids;
+        setActiveNoteIds(ids);
     }, []);
+
+    const activeKeys = useMemo(
+        () => new Set(notes.filter(note => activeNoteIds.has(note.id)).map(note => note.key)),
+        [notes, activeNoteIds]
+    );
 
     const stop = useCallback(() => {
         setState("stopped");
         setTime(0);
-        publishActiveKeys(NO_KEYS);
-    }, [setTime, publishActiveKeys]);
+        publishActiveNotes(NO_NOTES);
+    }, [setTime, publishActiveNotes]);
 
     const pause = useCallback(() => {
         setState("paused");
-        publishActiveKeys(NO_KEYS);
-    }, [publishActiveKeys]);
+        publishActiveNotes(NO_NOTES);
+    }, [publishActiveNotes]);
 
     const play = useCallback(() => {
         if (duration <= 0) return;
@@ -87,13 +92,13 @@ export default function useTimelinePlayer({notes, duration, pixelsPerSecond, scr
                 return;
             }
             setTime(time);
-            publishActiveKeys(getActiveKeys(notes, time));
+            publishActiveNotes(new Set(getActiveNotes(notes, time).map(note => note.id)));
             frame = requestAnimationFrame(tick);
         };
 
         frame = requestAnimationFrame(tick);
         return () => cancelAnimationFrame(frame);
-    }, [state, notes, duration, setTime, publishActiveKeys, stop]);
+    }, [state, notes, duration, setTime, publishActiveNotes, stop]);
 
     const handleScroll = useCallback(() => {
         const element = scrollRef.current;
@@ -107,5 +112,5 @@ export default function useTimelinePlayer({notes, duration, pixelsPerSecond, scr
         setDisplayTime(Math.round(time * 10) / 10);
     }, [scrollRef, state, duration, pixelsPerSecond]);
 
-    return {state, activeKeys, currentTime: displayTime, play, pause, stop, handleScroll};
+    return {state, activeKeys, activeNoteIds, currentTime: displayTime, play, pause, stop, handleScroll};
 }

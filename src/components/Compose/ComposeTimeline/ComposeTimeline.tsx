@@ -10,7 +10,7 @@ type ComposeTimelineProps = {
     notes: ComposeNote[];
     // Tone of every manual key (null = unassigned), used for the box labels
     keyTones: (HarmoniumTone | null)[];
-    activeKeys: ReadonlySet<number>;
+    activeNoteIds: ReadonlySet<string>;
     // Length in seconds
     duration: number;
     pixelsPerSecond: number;
@@ -24,7 +24,7 @@ const COLUMNS = Array.from({length: MANUAL_ROW_COUNT}, (_, column) => column);
  * Timeline with the same columns as the manual below it. Time runs upwards from the bottom
  * edge: boxes fall down and sound the key underneath as they cross the fixed playhead line.
  */
-export default function ComposeTimeline({notes, keyTones, activeKeys, duration, pixelsPerSecond, scrollRef, onScroll}: ComposeTimelineProps) {
+export default function ComposeTimeline({notes, keyTones, activeNoteIds, duration, pixelsPerSecond, scrollRef, onScroll}: ComposeTimelineProps) {
     const lanes = useMemo(() => assignLanes(notes, key => KEY_COLUMNS[key]), [notes]);
 
     return (
@@ -51,7 +51,7 @@ export default function ComposeTimeline({notes, keyTones, activeKeys, duration, 
                         return (
                             <div
                                 key={note.id}
-                                className={`${style.Note} ${activeKeys.has(note.key) ? style.NoteActive : ""} ${tone ? "" : style.NoteUnassigned}`}
+                                className={`${style.Note} ${activeNoteIds.has(note.id) ? style.NoteActive : ""} ${tone ? "" : style.NoteUnassigned}`}
                                 style={{
                                     backgroundColor: `var(--manual-key-${KEY_COLOURS[note.key]})`,
                                     bottom: note.start * pixelsPerSecond,

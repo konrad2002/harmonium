@@ -1,6 +1,6 @@
 import {describe, it, expect} from "vitest";
 import type {ComposeNote} from "../model/ComposeNote.ts";
-import {assignLanes, getActiveKeys, getCompositionDuration} from "./ComposeTimelineHelper.ts";
+import {assignLanes, getActiveKeys, getActiveNotes, getCompositionDuration} from "./ComposeTimelineHelper.ts";
 import {EXAMPLE_COMPOSITION} from "../data/ExampleComposition.ts";
 import {KEY_COLUMNS, KEY_COUNT} from "../data/ManualLayout.ts";
 
@@ -18,6 +18,16 @@ describe("getCompositionDuration", () => {
 
     it("is the end of the last finishing note", () => {
         expect(getCompositionDuration([note("a", 0, 0, 5), note("b", 1, 2, 1)])).toBe(5);
+    });
+});
+
+describe("getActiveNotes", () => {
+    it("only returns the note being played when the same key repeats", () => {
+        const notes = [note("a", 3, 0, 0.25), note("b", 3, 0.5, 0.25), note("c", 3, 1, 0.25)];
+
+        expect(getActiveNotes(notes, 0.1).map(n => n.id)).toEqual(["a"]);
+        expect(getActiveNotes(notes, 0.3)).toEqual([]);
+        expect(getActiveNotes(notes, 0.6).map(n => n.id)).toEqual(["b"]);
     });
 });
 

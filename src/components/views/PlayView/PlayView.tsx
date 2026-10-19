@@ -4,6 +4,7 @@ import Manual from "../../ManualView/Manual/Manual.tsx";
 import SongSelector from "../../Player/SongSelector/SongSelector.tsx";
 import PlayerControls from "../../Player/PlayerControls/PlayerControls.tsx";
 import VolumeControl from "../../Player/VolumeControl/VolumeControl.tsx";
+import SoundSelector from "../../Player/SoundSelector/SoundSelector.tsx";
 import {useInstrumentTones} from "../../../hooks/useInstrumentTones.ts";
 import {EXAMPLE_SONGS} from "../../../core/data/ExampleSongs.ts";
 import type {Song} from "../../../core/model/Song.ts";
@@ -26,6 +27,7 @@ export default function PlayView() {
                     onPlayingFrequencies={setPlayingFrequencies}
                 />
                 <VolumeControl/>
+                <SoundSelector/>
             </div>
             <Manual layout="original" instrument={instrument} playingFrequencies={playingFrequencies} showVolume={false}/>
         </>
