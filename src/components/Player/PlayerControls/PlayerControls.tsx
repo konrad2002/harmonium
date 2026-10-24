@@ -1,24 +1,29 @@
 import style from "./PlayerControls.module.scss";
-import useSongPlayer from "../../../hooks/useSongPlayer.ts";
-import type {Song} from "../../../core/model/Song.ts";
+import type {TimelinePlayerState} from "../../../hooks/useTimelinePlayer.ts";
 import {useI18n} from "../../../i18n.tsx";
 
 type PlayerControlsProps = {
-    song: Song | null;
-    onPlayingFrequencies?: (frequencies: Set<number>) => void;
+    state: TimelinePlayerState;
+    // Seconds
+    currentTime: number;
+    duration: number;
+    onPlay: () => void;
+    onPause: () => void;
+    onStop: () => void;
+    onSeek: (time: number) => void;
 };
 
-export default function PlayerControls({song, onPlayingFrequencies}: PlayerControlsProps) {
-    const {state, currentTime, duration, play, pause, stop, seek} = useSongPlayer(song, {onPlayingFrequencies});
+function formatTime(seconds: number): string {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+}
+
+export default function PlayerControls({state, currentTime, duration, onPlay, onPause, onStop, onSeek}: PlayerControlsProps) {
     const {t} = useI18n();
 
-    function formatTime(seconds: number): string {
-        const mins = Math.floor(seconds / 60);
-        const secs = Math.floor(seconds % 60);
-        return `${mins}:${secs.toString().padStart(2, '0')}`;
-    }
-
     const isPlaying = state === "playing";
+    const empty = duration <= 0;
 
     return (
         <div className={style.PlayerControls}>
@@ -26,8 +31,8 @@ export default function PlayerControls({song, onPlayingFrequencies}: PlayerContr
                 <button
                     type="button"
                     className={style.Button}
-                    onClick={stop}
-                    disabled={!song}
+                    onClick={onStop}
+                    disabled={empty}
                     aria-label={t("playback.stopAria")}
                 >
                     {t("playback.stop")}
@@ -35,8 +40,8 @@ export default function PlayerControls({song, onPlayingFrequencies}: PlayerContr
                 <button
                     type="button"
                     className={style.Button}
-                    onClick={isPlaying ? pause : play}
-                    disabled={!song}
+                    onClick={isPlaying ? onPause : onPlay}
+                    disabled={empty}
                     aria-label={isPlaying ? t("playback.pauseAria") : t("playback.playAria")}
                 >
                     {isPlaying ? t("playback.pause") : t("playback.play")}
@@ -53,10 +58,11 @@ export default function PlayerControls({song, onPlayingFrequencies}: PlayerContr
                 <input
                     type="range"
                     min={0}
-                    max={duration || 0}
-                    value={currentTime}
-                    onChange={(e) => seek(Number(e.target.value))}
-                    disabled={!song}
+                    max={duration}
+                    step={0.1}
+                    value={Math.min(currentTime, duration)}
+                    onChange={(e) => onSeek(Number(e.target.value))}
+                    disabled={empty}
                     aria-label={t("playback.seek")}
                 />
             </div>

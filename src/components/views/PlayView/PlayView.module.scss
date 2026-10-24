@@ -9,3 +9,10 @@
   border: 1px solid var(--color-border);
   border-radius: 4px;
 }
+
+.Hint {
+  flex-basis: 100%;
+  font-size: 0.85rem;
+  color: var(--color-fg);
+  opacity: 0.8;
+}

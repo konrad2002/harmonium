@@ -13,8 +13,6 @@ type ManualProps = {
     layout: "original" | "compact" | "compose";
     // Tones and registers (see useInstrumentTones)
     instrument: InstrumentTones;
-    // Frequencies currently playing from song playback (to highlight keys)
-    playingFrequencies?: Set<number>;
     // Keys (by index) to show as pressed, e.g. while a timeline plays
     activeKeys?: ReadonlySet<number>;
     // Selection mode: pressing a key also selects it (for editing) instead of only playing it
@@ -40,7 +38,7 @@ type ManualProps = {
 // Computer keys that play the first keys of the manual (left to right, column by column).
 const KEYBOARD_KEYS = "1234567890qwertyuiopasdfghjklzxcvbnm,./".split("");
 
-export default function Manual({layout, instrument, playingFrequencies, activeKeys, selectionMode = false, selectedKey = null, onSelectKey, topSlot, onKeyDown, onKeyUp, showVolume = true, showRegisters = true, showFrequencies = true, fill = false}: ManualProps) {
+export default function Manual({layout, instrument, activeKeys, selectionMode = false, selectedKey = null, onSelectKey, topSlot, onKeyDown, onKeyUp, showVolume = true, showRegisters = true, showFrequencies = true, fill = false}: ManualProps) {
     const {registers, activeRegisterIds, toggleRegister, keyTones} = instrument;
     const {t} = useI18n();
 
@@ -132,7 +130,7 @@ export default function Manual({layout, instrument, playingFrequencies, activeKe
                     tone={tone}
                     selected={selectionMode && selectedKey === keyIndex}
                     showFrequency={showFrequencies}
-                    pressed={(!!tone && (pressedFrequencies.has(tone.frequency) || playingFrequencies?.has(tone.frequency))) || activeKeys?.has(keyIndex) || false}
+                    pressed={(!!tone && pressedFrequencies.has(tone.frequency)) || activeKeys?.has(keyIndex) || false}
                     onMouseDown={() => {
                         if (!tone) return;
                         if (selectionMode) onSelectKey?.(keyIndex);

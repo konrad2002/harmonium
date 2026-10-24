@@ -33,6 +33,7 @@ export default function useTimelinePlayer({notes, duration, pixelsPerSecond, scr
     const [displayTime, setDisplayTime] = useState(0);
 
     const timeRef = useRef(0);
+    const startedAtRef = useRef(0);
     const activeRef = useRef<ReadonlySet<string>>(NO_NOTES);
 
     const applyScroll = useCallback((time: number) => {
@@ -82,11 +83,11 @@ export default function useTimelinePlayer({notes, duration, pixelsPerSecond, scr
     useEffect(() => {
         if (state !== "playing") return;
 
-        const startedAt = performance.now() - timeRef.current * 1000;
+        startedAtRef.current = performance.now() - timeRef.current * 1000;
         let frame = 0;
 
         const tick = () => {
-            const time = (performance.now() - startedAt) / 1000;
+            const time = (performance.now() - startedAtRef.current) / 1000;
             if (time >= duration) {
                 stop();
                 return;
@@ -112,5 +113,12 @@ export default function useTimelinePlayer({notes, duration, pixelsPerSecond, scr
         setDisplayTime(Math.round(time * 10) / 10);
     }, [scrollRef, state, duration, pixelsPerSecond]);
 
-    return {state, activeKeys, activeNoteIds, currentTime: displayTime, play, pause, stop, handleScroll};
+    // Jump to a time; playback continues from there if it is running
+    const seek = useCallback((time: number) => {
+        const target = Math.min(Math.max(time, 0), duration);
+        setTime(target);
+        startedAtRef.current = performance.now() - target * 1000;
+    }, [duration, setTime]);
+
+    return {state, activeKeys, activeNoteIds, currentTime: displayTime, play, pause, stop, seek, handleScroll};
 }
