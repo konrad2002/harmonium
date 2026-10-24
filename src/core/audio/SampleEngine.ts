@@ -16,7 +16,8 @@ export class SampleEngine implements ToneEngine {
     private config: SampleConfig | null = null;
     private buffer: AudioBuffer | null = null;
     private loading: Promise<void> | null = null;
-    private readonly voices = new Map<number, ToneBufferSource>();
+    // The latest voice per frequency; `held` is false once its key was released and it rings out
+    private readonly voices = new Map<number, {source: ToneBufferSource; held: boolean}>();
 
     prepare(): Promise<void> {
         this.loading ??= this.load().catch(error => {
@@ -56,8 +57,9 @@ export class SampleEngine implements ToneEngine {
         const {config, buffer} = this;
         if (!config || !buffer) return;
 
-        // Pressing a tone that is still sounding lets the old one fall while the new one rises
-        this.release(frequency);
+        // The same tone again: fade out the previous one (also its release tail), otherwise the
+        // new attack blends into it and repeated notes sound like one long note
+        this.voices.get(frequency)?.source.stop(now());
 
         const source = new ToneBufferSource({
             url: buffer,
@@ -67,31 +69,29 @@ export class SampleEngine implements ToneEngine {
             playbackRate: getPlaybackRate(frequency, config),
             fadeOut: HARD_STOP_FADE,
             onended: () => {
-                if (this.voices.get(frequency) === source) this.voices.delete(frequency);
+                if (this.voices.get(frequency) === voice) this.voices.delete(frequency);
                 // Disposing inside Tone's own end handler is not safe
                 setTimeout(() => source.dispose());
             },
         }).toDestination();
+        const voice = {source, held: true};
 
         // Looping sources start at the loop start by default; the rising part comes first
         source.start(now(), 0);
-        this.voices.set(frequency, source);
+        this.voices.set(frequency, voice);
     }
 
     stopTone(frequency: number): void {
-        this.release(frequency);
+        const voice = this.voices.get(frequency);
+        if (!voice?.held) return;
+
+        // Leave the loop: the sound finishes the cycle and runs into the falling part
+        voice.held = false;
+        voice.source.loop = false;
     }
 
     stopAll(): void {
-        for (const source of this.voices.values()) source.stop(now());
+        for (const {source} of this.voices.values()) source.stop(now());
         this.voices.clear();
-    }
-
-    private release(frequency: number): void {
-        const source = this.voices.get(frequency);
-        if (!source) return;
-
-        this.voices.delete(frequency);
-        source.loop = false;
     }
 }

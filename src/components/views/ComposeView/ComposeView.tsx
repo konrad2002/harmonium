@@ -116,7 +116,7 @@ export default function ComposeView() {
     }, [editMode, selectedNoteId, setNotes]);
 
     // Sound the keys under the playhead
-    useKeySounding(player.activeKeys, instrument.keyTones);
+    useKeySounding(notes, player.activeNoteIds, instrument.keyTones);
 
     // Pitch of every key's current tone in cents; the MIDI pitch of a note depends on the registers
     const keyCents = useMemo(() => instrument.keyTones.map(tone => tone?.cent ?? null), [instrument.keyTones]);

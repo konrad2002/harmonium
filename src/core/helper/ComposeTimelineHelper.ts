@@ -48,9 +48,16 @@ export function getCompositionDuration(notes: ComposeNote[]): number {
     return notes.reduce((end, note) => Math.max(end, note.start + note.duration), 0);
 }
 
-/** Notes held at `time` (a note is held from its start up to, excluding, its end). */
+// Playback ends every note a little early, so that a note directly followed by one on the same
+// key is heard as two notes instead of one long one.
+export const ARTICULATION_GAP = 0.04;
+
+/** Notes sounding at `time`: from their start up to their end, minus the articulation gap. */
 export function getActiveNotes(notes: ComposeNote[], time: number): ComposeNote[] {
-    return notes.filter(note => note.start <= time && time < note.start + note.duration);
+    return notes.filter(note => {
+        const gap = Math.min(ARTICULATION_GAP, note.duration / 2);
+        return note.start <= time && time < note.start + note.duration - gap;
+    });
 }
 
 /** Keys held at `time`. */

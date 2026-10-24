@@ -55,7 +55,7 @@ export default function PlayView() {
     const scrollRef = useRef<HTMLDivElement>(null);
     const player = useTimelinePlayer({notes, duration, pixelsPerSecond: 1, scrollRef});
 
-    useKeySounding(player.activeKeys, instrument.keyTones);
+    useKeySounding(notes, player.activeNoteIds, instrument.keyTones);
 
     return (
         <>

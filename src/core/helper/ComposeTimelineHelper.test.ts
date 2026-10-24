@@ -50,6 +50,18 @@ describe("dragNote", () => {
 });
 
 describe("getActiveNotes", () => {
+    it("leaves a gap between notes that directly follow each other on a key", () => {
+        const notes = [note("a", 3, 0, 0.5), note("b", 3, 0.5, 0.5)];
+
+        expect(getActiveNotes(notes, 0.3).map(n => n.id)).toEqual(["a"]);
+        expect(getActiveNotes(notes, 0.49)).toEqual([]);
+        expect(getActiveNotes(notes, 0.5).map(n => n.id)).toEqual(["b"]);
+    });
+
+    it("keeps very short notes audible", () => {
+        expect(getActiveNotes([note("a", 3, 1, 0.05)], 1).map(n => n.id)).toEqual(["a"]);
+    });
+
     it("only returns the note being played when the same key repeats", () => {
         const notes = [note("a", 3, 0, 0.25), note("b", 3, 0.5, 0.25), note("c", 3, 1, 0.25)];
 
