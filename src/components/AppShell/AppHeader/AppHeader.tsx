@@ -1,5 +1,6 @@
 import style from "./AppHeader.module.scss";
 import useTheme from "../../../hooks/useTheme.ts";
+import ProjectFileControls from "../ProjectFileControls/ProjectFileControls.tsx";
 import {useI18n} from "../../../i18n.tsx";
 
 export default function AppHeader() {
@@ -10,6 +11,7 @@ export default function AppHeader() {
         <header className={style.AppHeader}>
             <h1 className={style.Title}>{t("app.title")}</h1>
             <div className={style.Actions}>
+                <ProjectFileControls/>
                 <label className={style.LanguageSelector}>
                     {t("language.label")}
                     <select

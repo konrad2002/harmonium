@@ -1,4 +1,5 @@
-export type EngineId = "synth" | "sample";
+export const ENGINE_IDS = ["synth", "sample"] as const;
+export type EngineId = typeof ENGINE_IDS[number];
 
 export type EngineStatus =
     | {state: "loading"}

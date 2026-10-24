@@ -1,0 +1,24 @@
+.ProjectFileControls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.Message {
+  max-width: 28em;
+  font-size: 0.85rem;
+  color: var(--color-accent);
+}
+
+.Button {
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  color: var(--color-fg);
+  padding: 6px 12px;
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--color-accent);
+  }
+}

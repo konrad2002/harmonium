@@ -1,50 +1,74 @@
-import {useState, useCallback, useEffect} from "react";
+import {useCallback, useMemo, useSyncExternalStore} from "react";
 import type {Register} from "../core/data/RegisterConfiguration.ts";
+import {
+    defaultRegisterSelection,
+    parseRegisterSelection,
+    type RegisterSelection,
+} from "../core/data/RegisterSelection.ts";
+
+const STORAGE_KEY = "harmonium.registerSelection";
+
+function load(): RegisterSelection | null {
+    try {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        return stored === null ? null : parseRegisterSelection(JSON.parse(stored));
+    } catch {
+        return null;
+    }
+}
+
+// Shared by all views and saved. null = nothing chosen yet, so the defaults of registers.json apply.
+let selection: RegisterSelection | null = load();
+const listeners = new Set<() => void>();
+
+export function getRegisterSelection(): RegisterSelection | null {
+    return selection;
+}
+
+export function setRegisterSelection(next: RegisterSelection): void {
+    selection = next;
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+    } catch (error) {
+        console.warn("Could not save the register selection:", error);
+    }
+    listeners.forEach(listener => listener());
+}
+
+function subscribe(listener: () => void): () => void {
+    listeners.add(listener);
+    return () => listeners.delete(listener);
+}
 
 /**
  * Hook for managing register selection state
- * 
+ *
  * Tracks which register is active for each color (red, white, blue, yellow).
  * Only one register per color can be active at a time.
  */
 export function useRegisterSelection(registers: Register[]) {
+    const stored = useSyncExternalStore(subscribe, getRegisterSelection);
+
     // Map color -> active register ID
-    const [activeRegisters, setActiveRegisters] = useState<Map<string, number>>(new Map());
-
-    // Once registers are loaded, default to each colour's register marked "active" in
-    // registers.json, without overriding a selection the user already made.
-    useEffect(() => {
-        if (registers.length === 0) return;
-
-        setActiveRegisters(prev => {
-            if (prev.size > 0) return prev;
-
-            const defaults = new Map<string, number>();
-            for (const register of registers) {
-                if (register.active) defaults.set(register.colour, register.id);
-            }
-            return defaults;
-        });
-    }, [registers]);
+    const activeRegisters = useMemo(() => {
+        const effective = stored ?? defaultRegisterSelection(registers);
+        return new Map(Object.entries(effective).filter(([colour, id]) =>
+            registers.some(register => register.id === id && register.colour === colour)));
+    }, [stored, registers]);
 
     const toggleRegister = useCallback((registerId: number, colour: string) => {
-        setActiveRegisters(prev => {
-            const newMap = new Map(prev);
+        const next = {...(getRegisterSelection() ?? defaultRegisterSelection(registers))};
 
-            // Get the currently active register for this colour
-            const currentRegisterForColor = newMap.get(colour);
+        if (next[colour] === registerId) {
+            // Deactivate the register
+            delete next[colour];
+        } else {
+            // Activate this register (deactivates others for the same color)
+            next[colour] = registerId;
+        }
 
-            if (currentRegisterForColor === registerId) {
-                // Deactivate the register
-                newMap.delete(colour);
-            } else {
-                // Activate this register (deactivates others for the same color)
-                newMap.set(colour, registerId);
-            }
-
-            return newMap;
-        });
-    }, []);
+        setRegisterSelection(next);
+    }, [registers]);
 
     const isRegisterActive = useCallback((registerId: number, colour: string): boolean => {
         return activeRegisters.get(colour) === registerId;

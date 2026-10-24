@@ -10,6 +10,20 @@
   border-radius: 4px;
 }
 
+.Button {
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  color: var(--color-fg);
+  padding: 3px 10px;
+  cursor: pointer;
+
+  &:hover,
+  &[aria-pressed="true"] {
+    border-color: var(--color-accent);
+  }
+}
+
 .Hint {
   flex-basis: 100%;
   font-size: 0.85rem;

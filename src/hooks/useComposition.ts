@@ -38,6 +38,8 @@ function getNotes(): ComposeNote[] {
     return notes;
 }
 
+export {getNotes as getComposition, setNotes as setComposition};
+
 /** The current composition (shared by all views) and a setter that accepts an updater function. */
 export function useComposition(): [ComposeNote[], (update: NotesUpdate) => void] {
     return [useSyncExternalStore(subscribe, getNotes), setNotes];

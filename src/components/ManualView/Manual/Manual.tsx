@@ -6,6 +6,8 @@ import {useCallback, useEffect, useRef, useState, type ReactNode} from "react";
 import useHarmoniumSynth from "../../../hooks/useHarmoniumSynth.ts";
 import type {InstrumentTones} from "../../../hooks/useInstrumentTones.ts";
 import {KEY_COLOURS} from "../../../core/data/ManualLayout.ts";
+import {resolveSlot} from "../../../core/data/KeyboardMapping.ts";
+import {useKeyboardSetup} from "../../../hooks/useKeyboardSetup.ts";
 import Keyboard from "../../KeyboardView/Keyboard/Keyboard.tsx";
 import {useI18n} from "../../../i18n.tsx";
 
@@ -35,8 +37,6 @@ type ManualProps = {
     fill?: boolean;
 }
 
-// Computer keys that play the first keys of the manual (left to right, column by column).
-const KEYBOARD_KEYS = "1234567890qwertyuiopasdfghjklzxcvbnm,./".split("");
 
 export default function Manual({layout, instrument, activeKeys, selectionMode = false, selectedKey = null, onSelectKey, topSlot, onKeyDown, onKeyUp, showVolume = true, showRegisters = true, showFrequencies = true, fill = false}: ManualProps) {
     const {registers, activeRegisterIds, toggleRegister, keyTones} = instrument;
@@ -64,15 +64,27 @@ export default function Manual({layout, instrument, activeKeys, selectionMode = 
     // Held computer keys by physical key (e.code): a release must find the note that its press
     // started, even when Shift/Caps Lock changed the character (e.key) in between.
     const heldKeysRef = useRef(new Map<string, number>());
+    const {octave, mapping, shiftOctave} = useKeyboardSetup();
 
-    // Play the first manual keys via the computer keyboard, with their register tones.
+    // Play the manual via the computer keyboard: each key is assigned a manual key of the selected
+    // octave; arrow up/down shift the octave.
     useEffect(() => {
         const held = heldKeysRef.current;
 
         function handleKeyDown(e: KeyboardEvent) {
-            if (e.repeat || held.has(e.code) || e.metaKey || e.ctrlKey || e.altKey) return;
-            const index = KEYBOARD_KEYS.indexOf(e.key.toLowerCase());
-            const tone = index === -1 ? null : keyTones[index];
+            if (e.metaKey || e.ctrlKey || e.altKey) return;
+            if ((e.target as HTMLElement).closest("input, select, textarea")) return;
+
+            if (e.code === "ArrowUp" || e.code === "ArrowDown") {
+                e.preventDefault();
+                shiftOctave(e.code === "ArrowUp" ? 1 : -1);
+                return;
+            }
+
+            if (e.repeat || held.has(e.code)) return;
+            const slot = mapping[e.code];
+            const key = slot ? resolveSlot(slot, octave, keyTones) : null;
+            const tone = key === null ? null : keyTones[key];
             if (!tone) return;
 
             held.set(e.code, tone.frequency);
@@ -101,7 +113,7 @@ export default function Manual({layout, instrument, activeKeys, selectionMode = 
             window.removeEventListener("keyup", handleKeyUp);
             window.removeEventListener("blur", releaseAll);
         };
-    }, [keyTones, press, release]);
+    }, [keyTones, octave, mapping, shiftOctave, press, release]);
 
     const buttons = [];
 
