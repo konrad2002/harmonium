@@ -124,6 +124,15 @@ export default function ComposeView() {
     const [message, setMessage] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
+    const clearComposition = useCallback(() => {
+        if (!window.confirm(t("compose.clearConfirm"))) return;
+
+        stopPlayback();
+        setSelectedNoteId(null);
+        setNotes([]);
+        setMessage(t("compose.cleared"));
+    }, [setNotes, stopPlayback, t]);
+
     const exportMidi = useCallback(() => {
         if (!keyCents.some(cents => cents !== null)) {
             setMessage(t("compose.tonesNotLoaded"));
@@ -212,6 +221,14 @@ export default function ComposeView() {
                     </button>
                     <button type="button" className={style.Button} onClick={exportMidi}>
                         {t("compose.export")}
+                    </button>
+                    <button
+                        type="button"
+                        className={style.Button}
+                        onClick={clearComposition}
+                        disabled={notes.length === 0}
+                    >
+                        {t("compose.clear")}
                     </button>
                     <input
                         ref={fileInputRef}
