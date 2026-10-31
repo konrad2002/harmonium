@@ -11,6 +11,7 @@ import useKeySounding from "../../../hooks/useKeySounding.ts";
 import useTimelinePlayer from "../../../hooks/useTimelinePlayer.ts";
 import {DEFAULT_NOTE_DURATION, getCompositionDuration} from "../../../core/helper/ComposeTimelineHelper.ts";
 import {downloadFile} from "../../../core/helper/DownloadHelper.ts";
+import {transposeNotes} from "../../../core/helper/TransposeHelper.ts";
 import {exportComposition, importComposition} from "../../../core/midi/ReinharmidiumMidi.ts";
 import {useI18n} from "../../../i18n.tsx";
 
@@ -133,6 +134,17 @@ export default function ComposeView() {
         setMessage(t("compose.cleared"));
     }, [setNotes, stopPlayback, t]);
 
+    const transpose = useCallback((octaves: number) => {
+        const {notes: moved, removed} = transposeNotes(notes, octaves, instrument.keyTones);
+
+        stopPlayback();
+        setSelectedNoteId(null);
+        setNotes(moved);
+        setMessage(removed === 0
+            ? t("compose.transposed")
+            : t("compose.transposedWithRemoved", {removed}));
+    }, [notes, instrument.keyTones, setNotes, stopPlayback, t]);
+
     const exportMidi = useCallback(() => {
         if (!keyCents.some(cents => cents !== null)) {
             setMessage(t("compose.tonesNotLoaded"));
@@ -215,6 +227,14 @@ export default function ComposeView() {
                 <div className={style.Time}>{formatTime(player.currentTime)} / {formatTime(duration)}</div>
                 <VolumeControl/>
                 <SoundSelector/>
+                <div className={style.ButtonGroup}>
+                    <button type="button" className={style.Button} onClick={() => transpose(-1)} disabled={notes.length === 0}>
+                        {t("compose.octaveDown")}
+                    </button>
+                    <button type="button" className={style.Button} onClick={() => transpose(1)} disabled={notes.length === 0}>
+                        {t("compose.octaveUp")}
+                    </button>
+                </div>
                 <div className={style.ButtonGroup}>
                     <button type="button" className={style.Button} onClick={() => fileInputRef.current?.click()}>
                         {t("compose.import")}
